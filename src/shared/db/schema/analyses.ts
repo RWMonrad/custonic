@@ -10,7 +10,7 @@ import { contracts } from "./contracts";
 import { organizations } from "./organizations";
 
 export const analysisStatusEnum = pgEnum("analysis_status", [
-  "pending",
+  "queued",
   "processing",
   "completed",
   "failed",
@@ -32,12 +32,15 @@ export const analyses = pgTable("analyses", {
     onDelete: "cascade",
   }),
   type: analysisTypeEnum("type").notNull(),
-  status: analysisStatusEnum("status").default("pending"),
+  status: analysisStatusEnum("status").default("queued"),
   confidence_score: integer("confidence_score"), // 0-100
   processing_time_ms: integer("processing_time_ms"),
   ai_model_version: text("ai_model_version"),
   results: text("results"), // JSON with analysis results
   error_message: text("error_message"),
+  retry_count: integer("retry_count").default(0),
+  started_at: timestamp("started_at"),
+  finished_at: timestamp("finished_at"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });

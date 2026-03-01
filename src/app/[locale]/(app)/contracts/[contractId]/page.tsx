@@ -1,3 +1,4 @@
+import { ContractAnalysis } from "@/modules/analysis/components/contract-analysis";
 import { getCurrentOrgIdOrThrow } from "@/modules/auth/lib/current-org";
 import { ContractDetailActions } from "@/modules/contracts/components/contract-detail-actions";
 import { getContractById } from "@/modules/contracts/lib/contracts";
@@ -167,16 +168,52 @@ export default async function ContractDetailPage({
                   </div>
                 )}
 
-                {/* Future placeholders */}
-                <div className="flex items-center space-x-3 opacity-50">
-                  <div className="w-3 h-3 rounded-full bg-gray-300" />
-                  <div>
-                    <p className="text-sm font-medium">Analyzing (Future)</p>
-                    <p className="text-xs text-gray-500">
-                      AI analysis will be available
-                    </p>
+                {(contract.status === "queued" ||
+                  contract.status === "processing") && (
+                  <div className="flex items-center space-x-3">
+                    <div
+                      className={`w-3 h-3 rounded-full ${
+                        contract.status === "queued"
+                          ? "bg-yellow-500"
+                          : "bg-blue-500 animate-pulse"
+                      }`}
+                    />
+                    <div>
+                      <p className="text-sm font-medium">
+                        {contract.status === "queued" ? "Queued" : "Processing"}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {contract.status === "queued"
+                          ? "Analysis is queued"
+                          : "Analysis in progress"}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {contract.status === "completed" && (
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <div>
+                      <p className="text-sm font-medium">Analysis Complete</p>
+                      <p className="text-xs text-gray-500">
+                        Contract analysis completed
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {contract.status === "failed" && (
+                  <div className="flex items-center space-x-3">
+                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <div>
+                      <p className="text-sm font-medium">Analysis Failed</p>
+                      <p className="text-xs text-gray-500">
+                        Analysis encountered an error
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center space-x-3 opacity-50">
                   <div className="w-3 h-3 rounded-full bg-gray-300" />
@@ -190,7 +227,8 @@ export default async function ContractDetailPage({
           </div>
 
           {/* Actions Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
+            <ContractAnalysis contract={contract} />
             <ContractDetailActions contract={contract} />
           </div>
         </div>

@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test:rls": "node scripts/rls-smoketest.mjs",
     "test:storage-rls": "node scripts/storage-rls-test.mjs",
-    "test:m4-download": "node scripts/m4-download-test.mjs"
+    "test:m4-download": "node scripts/m4-download-test.mjs",
+    "worker:analysis": "node scripts/analysis-worker.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

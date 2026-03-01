@@ -11,6 +11,10 @@ import { organizations } from "./organizations";
 export const contractStatusEnum = pgEnum("contract_status", [
   "draft",
   "active",
+  "queued",
+  "processing",
+  "completed",
+  "failed",
   "expired",
   "terminated",
   "pending_review",
