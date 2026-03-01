@@ -4,8 +4,16 @@ import { Link } from "@/shared/i18n/navigation";
 import { useFormState } from "react-dom";
 import { signUpAction } from "../actions";
 
+type AuthState = {
+  error?: string;
+  fields?: {
+    email?: string[];
+    password?: string[];
+  };
+} | null;
+
 export default function SignupPage() {
-  const [state, formAction] = useFormState(signUpAction, null);
+  const [state, formAction] = useFormState(signUpAction, null as AuthState);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">

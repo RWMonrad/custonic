@@ -3,8 +3,18 @@
 import { useFormState } from "react-dom";
 import { createOrganizationAction } from "./actions";
 
+type CreateOrgState = {
+  error?: string;
+  fields?: {
+    name?: string[];
+  };
+} | null;
+
 export default function OnboardingPage() {
-  const [state, formAction] = useFormState(createOrganizationAction, null);
+  const [state, formAction] = useFormState(
+    createOrganizationAction,
+    null as CreateOrgState,
+  );
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
