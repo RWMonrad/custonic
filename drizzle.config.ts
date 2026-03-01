@@ -1,10 +1,10 @@
-import type { Config } from 'drizzle-kit'
+import type { Config } from "drizzle-kit";
 
 export default {
-  schema: './src/lib/supabase/schema.ts',
-  out: './supabase/migrations',
-  dialect: 'postgresql',
+  schema: "./src/shared/db/schema/index.ts",
+  out: "./src/shared/db/migrations",
+  dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-} satisfies Config
+} satisfies Config;

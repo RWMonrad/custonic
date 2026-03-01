@@ -1,0 +1,71 @@
+{
+  "common": {
+    "loading": "Laster...",
+    "error": "Feil",
+    "success": "Suksess",
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "delete": "Slett",
+    "edit": "Rediger",
+    "view": "Vis",
+    "search": "Søk",
+    "filter": "Filter",
+    "export": "Eksporter",
+    "import": "Importer"
+  },
+  "navigation": {
+    "dashboard": "Kontrollpanel",
+    "contracts": "Kontrakter",
+    "analysis": "Analyse",
+    "alerts": "Varsler",
+    "settings": "Innstillinger",
+    "logout": "Logg ut",
+    "profile": "Profil"
+  },
+  "auth": {
+    "signIn": "Logg inn",
+    "signUp": "Opprett konto",
+    "email": "E-postadresse",
+    "password": "Passord",
+    "forgotPassword": "Glemt passord?",
+    "rememberMe": "Husk meg",
+    "noAccount": "Har du ikke konto?",
+    "hasAccount": "Har du allerede konto?"
+  },
+  "dashboard": {
+    "title": "Kontrollpanel",
+    "subtitle": "Overvåk dine kontrakter og spor ytelse",
+    "totalContracts": "Totalt antall kontrakter",
+    "activeContracts": "Aktive kontrakter",
+    "riskAlerts": "Risikovarsler",
+    "totalValue": "Total verdi",
+    "recentContracts": "Siste kontrakter",
+    "noContracts": "Ingen kontrakter ennå. Last opp din første kontrakt for å komme i gang."
+  },
+  "contracts": {
+    "title": "Kontrakter",
+    "uploadContract": "Last opp kontrakt",
+    "contractNumber": "Kontraktsnummer",
+    "counterparty": "Motpart",
+    "status": "Status",
+    "value": "Verdi",
+    "startDate": "Startdato",
+    "endDate": "Sluttdato",
+    "renewalDate": "Fornyelsesdato",
+    "description": "Beskrivelse"
+  },
+  "marketing": {
+    "title": "Custonic - Plattform for kontraktovervåkning",
+    "subtitle": "Overvåk kontrakter med tillit. Spor, analyser og administrer dine kontrakter i sanntid.",
+    "signIn": "Logg inn",
+    "uploadContract": "Last opp kontrakt",
+    "features": {
+      "monitoring": "Sanntidsovervåkning",
+      "monitoringDesc": "Følg kontraktsstatus, frister og ytelsesmålinger i sanntid",
+      "alerts": "Automatiske varsler",
+      "alertsDesc": "Gå aldri glipp av en fornyelsesfrist med intelligent varslingsystem",
+      "analytics": "Analysekontrollpanel",
+      "analyticsDesc": "Omfattende innsikt i din kontraktportefølje"
+    }
+  }
+}

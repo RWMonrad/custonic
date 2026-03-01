@@ -1,0 +1,71 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "contracts": "Contracts",
+    "analysis": "Analysis",
+    "alerts": "Alerts",
+    "settings": "Settings",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "email": "Email address",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember me",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Monitor your contracts and track performance",
+    "totalContracts": "Total Contracts",
+    "activeContracts": "Active Contracts",
+    "riskAlerts": "Risk Alerts",
+    "totalValue": "Total Value",
+    "recentContracts": "Recent Contracts",
+    "noContracts": "No contracts yet. Upload your first contract to get started."
+  },
+  "contracts": {
+    "title": "Contracts",
+    "uploadContract": "Upload Contract",
+    "contractNumber": "Contract Number",
+    "counterparty": "Counterparty",
+    "status": "Status",
+    "value": "Value",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "renewalDate": "Renewal Date",
+    "description": "Description"
+  },
+  "marketing": {
+    "title": "Custonic - Contract Monitoring Platform",
+    "subtitle": "Monitor contracts with confidence. Track, analyze, and manage your contracts in real-time.",
+    "signIn": "Sign In",
+    "uploadContract": "Upload Contract",
+    "features": {
+      "monitoring": "Real-time Monitoring",
+      "monitoringDesc": "Track contract status, deadlines, and performance metrics in real-time",
+      "alerts": "Automated Alerts",
+      "alertsDesc": "Never miss a renewal deadline with intelligent alert system",
+      "analytics": "Analytics Dashboard",
+      "analyticsDesc": "Comprehensive insights into your contract portfolio"
+    }
+  }
+}
