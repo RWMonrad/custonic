@@ -73,8 +73,6 @@ export function ContractUpload() {
       // Step 1: Create contract draft
       const formData = new FormData();
       formData.append("title", file.name);
-      formData.append("mimeType", file.type);
-      formData.append("sizeBytes", file.size.toString());
 
       const draftResponse = await createContractDraftAction(
         initialContractDraftState,
@@ -109,8 +107,6 @@ export function ContractUpload() {
       const finalizeFormData = new FormData();
       finalizeFormData.append("contractId", draftResponse.data.contractId);
       finalizeFormData.append("filePath", draftResponse.data.uploadPath);
-      finalizeFormData.append("sizeBytes", file.size.toString());
-      finalizeFormData.append("mimeType", file.type);
 
       const finalizeResponse = await finalizeContractUploadAction(
         initialFinalizeUploadState,

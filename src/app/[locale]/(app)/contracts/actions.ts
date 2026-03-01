@@ -14,17 +14,11 @@ const ALLOWED_MIME_TYPES = [
 
 const createDraftSchema = z.object({
   title: z.string().min(1, "Title is required").max(255, "Title too long"),
-  mimeType: z.string().refine((mime) => ALLOWED_MIME_TYPES.includes(mime), {
-    message: "Only PDF and DOCX files are allowed",
-  }),
-  sizeBytes: z.number().max(MAX_FILE_SIZE, "File size must be less than 20MB"),
 });
 
 const finalizeUploadSchema = z.object({
   contractId: z.string().uuid("Invalid contract ID"),
   filePath: z.string().min(1, "File path is required"),
-  sizeBytes: z.number().positive("File size must be positive"),
-  mimeType: z.string().min(1, "MIME type is required"),
 });
 
 export type ContractDraftState = {
@@ -44,13 +38,9 @@ export async function createContractDraftAction(
   formData: FormData,
 ): Promise<ContractDraftState> {
   const title = formData.get("title") as string;
-  const mimeType = formData.get("mimeType") as string;
-  const sizeBytes = parseInt(formData.get("sizeBytes") as string);
 
   const validatedFields = createDraftSchema.safeParse({
     title,
-    mimeType,
-    sizeBytes,
   });
 
   if (!validatedFields.success) {
@@ -63,8 +53,6 @@ export async function createContractDraftAction(
   try {
     const result = await createContractDraft({
       title: validatedFields.data.title,
-      mimeType: validatedFields.data.mimeType,
-      sizeBytes: validatedFields.data.sizeBytes,
     });
 
     return {
@@ -95,14 +83,10 @@ export async function finalizeContractUploadAction(
 ): Promise<FinalizeUploadState> {
   const contractId = formData.get("contractId") as string;
   const filePath = formData.get("filePath") as string;
-  const sizeBytes = parseInt(formData.get("sizeBytes") as string);
-  const mimeType = formData.get("mimeType") as string;
 
   const validatedFields = finalizeUploadSchema.safeParse({
     contractId,
     filePath,
-    sizeBytes,
-    mimeType,
   });
 
   if (!validatedFields.success) {
@@ -116,8 +100,6 @@ export async function finalizeContractUploadAction(
     await finalizeContractUpload({
       contractId: validatedFields.data.contractId,
       filePath: validatedFields.data.filePath,
-      sizeBytes: validatedFields.data.sizeBytes,
-      mimeType: validatedFields.data.mimeType,
     });
 
     return {

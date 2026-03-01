@@ -4,12 +4,6 @@ import { contracts } from "@/shared/db/schema";
 import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
-export interface ContractDraft {
-  title: string;
-  mimeType: string;
-  sizeBytes: number;
-}
-
 export interface ContractDraftResult {
   contractId: string;
   orgId: string;
@@ -18,9 +12,9 @@ export interface ContractDraftResult {
 
 export async function createContractDraft({
   title,
-  mimeType: _mimeType,
-  sizeBytes: _sizeBytes,
-}: ContractDraft): Promise<ContractDraftResult> {
+}: {
+  title: string;
+}): Promise<ContractDraftResult> {
   const orgId = await getCurrentOrgIdOrThrow();
   const contractId = nanoid();
 
@@ -82,13 +76,9 @@ export async function listContractsForOrg(
 export async function finalizeContractUpload({
   contractId,
   filePath,
-  sizeBytes: _sizeBytes,
-  mimeType: _mimeType,
 }: {
   contractId: string;
   filePath: string;
-  sizeBytes: number;
-  mimeType: string;
 }): Promise<void> {
   const orgId = await getCurrentOrgIdOrThrow();
 
