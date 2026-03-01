@@ -1,98 +1,275 @@
-import { signOutAction } from "@/app/[locale]/(auth)/actions";
-import { getUserOrg } from "@/shared/lib/org";
-import { getAuthenticatedUser } from "@/shared/lib/supabase/server";
+import { AppLayout } from "@/shared/ui/AppLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
+import { KpiCard } from "@/shared/ui/KpiCard";
+import { RiskBadge } from "@/shared/ui/RiskBadge";
+import {
+  AlertTriangle,
+  BarChart3,
+  Calendar,
+  DollarSign,
+  FileText,
+  Users,
+} from "lucide-react";
 
-export default async function DashboardPage() {
-  const user = await getAuthenticatedUser();
-  const userOrg = await getUserOrg(user?.id || "");
+export default function DashboardPage() {
+  // Mock data
+  const kpiData = [
+    {
+      title: "Total Contracts",
+      value: "247",
+      change: { value: 12, type: "increase" as const },
+      icon: FileText,
+    },
+    {
+      title: "Risk Alerts",
+      value: "18",
+      change: { value: 8, type: "decrease" as const },
+      icon: AlertTriangle,
+    },
+    {
+      title: "Active Vendors",
+      value: "43",
+      change: { value: 3, type: "increase" as const },
+      icon: Users,
+    },
+    {
+      title: "Monthly Savings",
+      value: "$12.4k",
+      change: { value: 15, type: "increase" as const },
+      icon: DollarSign,
+    },
+  ];
+
+  const recentContracts = [
+    {
+      id: "1",
+      name: "Service Agreement - TechCorp",
+      status: "completed",
+      riskLevel: "high" as const,
+      date: "2024-03-01",
+      findings: 5,
+    },
+    {
+      id: "2",
+      name: "NDA Template - LegalDept",
+      status: "in_progress",
+      riskLevel: "critical" as const,
+      date: "2024-03-01",
+      findings: 8,
+    },
+    {
+      id: "3",
+      name: "SaaS Contract - CloudSoft",
+      status: "completed",
+      riskLevel: "medium" as const,
+      date: "2024-02-29",
+      findings: 3,
+    },
+    {
+      id: "4",
+      name: "Employment Agreement - HR",
+      status: "queued",
+      riskLevel: "low" as const,
+      date: "2024-02-28",
+      findings: 0,
+    },
+  ];
+
+  const upcomingDeadlines = [
+    {
+      id: "1",
+      contract: "TechCorp Service Agreement",
+      deadline: "2024-03-15",
+      daysLeft: 14,
+      type: "renewal",
+    },
+    {
+      id: "2",
+      contract: "CloudSoft SaaS License",
+      deadline: "2024-03-20",
+      daysLeft: 19,
+      type: "review",
+    },
+    {
+      id: "3",
+      contract: "LegalDept NDA Update",
+      deadline: "2024-03-25",
+      daysLeft: 24,
+      type: "termination",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Monitor your contracts and track performance
-            </p>
-          </div>
-
-          <form action={signOutAction}>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-destructive-foreground bg-destructive hover:bg-destructive/90 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-destructive"
-            >
-              Sign out
-            </button>
-          </form>
+    <AppLayout>
+      <div className="p-6 space-y-6">
+        {/* Page Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Overview of your contract analysis and risk management
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-card p-6 rounded-lg border">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Total Contracts
-            </h3>
-            <p className="text-2xl font-bold text-foreground">0</p>
-          </div>
-          <div className="bg-card p-6 rounded-lg border">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Active Contracts
-            </h3>
-            <p className="text-2xl font-bold text-foreground">0</p>
-          </div>
-          <div className="bg-card p-6 rounded-lg border">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Risk Alerts
-            </h3>
-            <p className="text-2xl font-bold text-foreground">0</p>
-          </div>
-          <div className="bg-card p-6 rounded-lg border">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Total Value
-            </h3>
-            <p className="text-2xl font-bold text-foreground">$0</p>
-          </div>
+        {/* KPI Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {kpiData.map((kpi, index) => (
+            <KpiCard key={index} {...kpi} />
+          ))}
         </div>
 
-        <div className="bg-card p-6 rounded-lg border">
-          <h2 className="text-xl font-semibold text-foreground mb-4">
-            Account Information
-          </h2>
-          <div className="space-y-2">
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">
-                Email:{" "}
-              </span>
-              <span className="text-sm text-foreground">{user?.email}</span>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Recent Contracts */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <FileText className="h-5 w-5" />
+                <span>Recent Contracts</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentContracts.map((contract) => (
+                  <div
+                    key={contract.id}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-background transition-colors"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground text-sm">
+                        {contract.name}
+                      </p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <RiskBadge level={contract.riskLevel} />
+                        <span className="text-xs text-muted-foreground">
+                          {contract.findings} findings
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">
+                        {contract.date}
+                      </p>
+                      <span
+                        className={`
+                        inline-block px-2 py-1 text-xs rounded-full mt-1
+                        ${contract.status === "completed" ? "bg-success/10 text-success" : ""}
+                        ${contract.status === "in_progress" ? "bg-warning/10 text-warning" : ""}
+                        ${contract.status === "queued" ? "bg-muted text-muted-foreground" : ""}
+                      `}
+                      >
+                        {contract.status.replace("_", " ")}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Upcoming Deadlines */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Calendar className="h-5 w-5" />
+                <span>Upcoming Deadlines</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {upcomingDeadlines.map((deadline) => (
+                  <div
+                    key={deadline.id}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground text-sm">
+                        {deadline.contract}
+                      </p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span
+                          className={`
+                          inline-block px-2 py-1 text-xs rounded-full
+                          ${deadline.type === "renewal" ? "bg-primary/10 text-primary" : ""}
+                          ${deadline.type === "review" ? "bg-warning/10 text-warning" : ""}
+                          ${deadline.type === "termination" ? "bg-danger/10 text-danger" : ""}
+                        `}
+                        >
+                          {deadline.type}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {deadline.deadline}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p
+                        className={`
+                        text-sm font-medium
+                        ${deadline.daysLeft <= 7 ? "text-danger" : ""}
+                        ${deadline.daysLeft > 7 && deadline.daysLeft <= 14 ? "text-warning" : ""}
+                        ${deadline.daysLeft > 14 ? "text-success" : ""}
+                      `}
+                      >
+                        {deadline.daysLeft} days
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Risk Overview Heatmap */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5" />
+              <span>Risk Overview</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-2">
+              {/* Mock heatmap data */}
+              {Array.from({ length: 35 }, (_, i) => {
+                const riskLevel = Math.random();
+                let bgColor = "bg-muted";
+                if (riskLevel > 0.8) bgColor = "bg-danger";
+                else if (riskLevel > 0.6) bgColor = "bg-warning";
+                else if (riskLevel > 0.3) bgColor = "bg-accent";
+
+                return (
+                  <div
+                    key={i}
+                    className={`
+                      aspect-square rounded-sm ${bgColor}
+                      ${riskLevel > 0.6 ? "ring-2 ring-ring" : ""}
+                    `}
+                    title={`Risk level: ${Math.round(riskLevel * 100)}%`}
+                  />
+                );
+              })}
             </div>
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">
-                Organization:{" "}
-              </span>
-              <span className="text-sm text-foreground">
-                {userOrg?.org?.name || "Not set"}
-              </span>
+            <div className="flex items-center justify-center space-x-6 mt-4 text-xs text-muted-foreground">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-muted rounded-sm" />
+                <span>Low Risk</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-accent rounded-sm" />
+                <span>Medium Risk</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-warning rounded-sm" />
+                <span>High Risk</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-danger rounded-sm" />
+                <span>Critical Risk</span>
+              </div>
             </div>
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">
-                Role:{" "}
-              </span>
-              <span className="text-sm text-foreground capitalize">
-                {userOrg?.membership?.role || "Not set"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-card p-6 rounded-lg border mt-6">
-          <h2 className="text-xl font-semibold text-foreground mb-4">
-            Recent Contracts
-          </h2>
-          <div className="text-center py-8 text-muted-foreground">
-            No contracts yet. Upload your first contract to get started.
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </AppLayout>
   );
 }
