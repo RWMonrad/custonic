@@ -2,7 +2,7 @@ import { getCurrentOrgIdOrThrow } from "@/modules/auth/lib/current-org";
 import { db } from "@/shared/db";
 import { contracts } from "@/shared/db/schema";
 import { createClient } from "@supabase/supabase-js";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
 export interface ContractDraftResult {
@@ -62,7 +62,12 @@ export async function listContractsForOrg(
       updated_at: contracts.updated_at,
     })
     .from(contracts)
-    .where(eq(contracts.org_id, orgId))
+    .where(
+      and(
+        eq(contracts.org_id, orgId),
+        isNull(contracts.deleted_at), // IMPORTANT: Filter out soft-deleted contracts
+      ),
+    )
     .orderBy(contracts.created_at);
 
   return result.map((contract) => ({
@@ -72,6 +77,44 @@ export async function listContractsForOrg(
     created_at: contract.created_at || new Date(),
     updated_at: contract.updated_at || new Date(),
   }));
+}
+
+export async function getContractById(
+  contractId: string,
+): Promise<ContractList | null> {
+  const orgId = await getCurrentOrgIdOrThrow();
+
+  const result = await db
+    .select({
+      id: contracts.id,
+      title: contracts.title,
+      status: contracts.status,
+      file_url: contracts.file_url,
+      created_at: contracts.created_at,
+      updated_at: contracts.updated_at,
+    })
+    .from(contracts)
+    .where(
+      and(
+        eq(contracts.id, contractId),
+        eq(contracts.org_id, orgId),
+        isNull(contracts.deleted_at), // IMPORTANT: Filter out soft-deleted contracts
+      ),
+    )
+    .limit(1);
+
+  if (result.length === 0) {
+    return null;
+  }
+
+  const contract = result[0];
+  return {
+    ...contract,
+    status: contract.status || "draft",
+    file_url: contract.file_url || null,
+    created_at: contract.created_at || new Date(),
+    updated_at: contract.updated_at || new Date(),
+  };
 }
 
 export async function finalizeContractUpload({
@@ -87,7 +130,13 @@ export async function finalizeContractUpload({
   const contractRecords = await db
     .select({ file_url: contracts.file_url })
     .from(contracts)
-    .where(and(eq(contracts.id, contractId), eq(contracts.org_id, orgId)))
+    .where(
+      and(
+        eq(contracts.id, contractId),
+        eq(contracts.org_id, orgId),
+        isNull(contracts.deleted_at), // IMPORTANT: Don't allow finalizing deleted contracts
+      ),
+    )
     .limit(1);
 
   if (contractRecords.length === 0) {

@@ -3,10 +3,10 @@
 -- =========================
 -- Run this after M3_Storage_RLS.sql
 
--- 1) Add unique constraint on file_path to prevent orphaned references
+-- 1) Add unique constraint on file_url to prevent orphaned references
 -- This ensures each storage file is referenced by only one contract
 alter table public.contracts 
-add constraint unique_contract_file_path 
+add constraint unique_contract_file_url 
 unique (file_url);
 
 -- 2) Add soft delete column (if not exists via migration)
