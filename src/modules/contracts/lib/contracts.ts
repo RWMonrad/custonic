@@ -18,8 +18,8 @@ export interface ContractDraftResult {
 
 export async function createContractDraft({
   title,
-  mimeType,
-  sizeBytes,
+  mimeType: _mimeType,
+  sizeBytes: _sizeBytes,
 }: ContractDraft): Promise<ContractDraftResult> {
   const orgId = await getCurrentOrgIdOrThrow();
   const contractId = nanoid();
@@ -82,8 +82,8 @@ export async function listContractsForOrg(
 export async function finalizeContractUpload({
   contractId,
   filePath,
-  sizeBytes,
-  mimeType,
+  sizeBytes: _sizeBytes,
+  mimeType: _mimeType,
 }: {
   contractId: string;
   filePath: string;
