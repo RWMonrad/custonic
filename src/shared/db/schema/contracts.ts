@@ -36,6 +36,7 @@ export const contracts = pgTable("contracts", {
   created_by: uuid("created_by"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
+  deleted_at: timestamp("deleted_at"), // Soft delete for orphan cleanup
 });
 
 export type Contract = typeof contracts.$inferSelect;

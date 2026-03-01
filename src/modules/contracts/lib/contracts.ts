@@ -1,6 +1,7 @@
 import { getCurrentOrgIdOrThrow } from "@/modules/auth/lib/current-org";
 import { db } from "@/shared/db";
 import { contracts } from "@/shared/db/schema";
+import { createClient } from "@supabase/supabase-js";
 import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
@@ -82,6 +83,48 @@ export async function finalizeContractUpload({
 }): Promise<void> {
   const orgId = await getCurrentOrgIdOrThrow();
 
+  // Step 1: Verify contract exists and belongs to user's org
+  const contractRecords = await db
+    .select({ file_url: contracts.file_url })
+    .from(contracts)
+    .where(and(eq(contracts.id, contractId), eq(contracts.org_id, orgId)))
+    .limit(1);
+
+  if (contractRecords.length === 0) {
+    throw new Error("Contract not found or access denied");
+  }
+
+  const contract = contractRecords[0];
+
+  // Step 2: Verify file path format and org consistency
+  if (!contract.file_url) {
+    throw new Error("Contract has no file path");
+  }
+
+  const expectedPathPrefix = `contracts/${orgId}/${contractId}`;
+  if (!contract.file_url.startsWith(expectedPathPrefix)) {
+    throw new Error("File path does not match expected org/contract format");
+  }
+
+  // Step 3: Verify file actually exists in storage
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+
+  const { data: files, error: listError } = await supabase.storage
+    .from("contracts")
+    .list(`${orgId}/${contractId}`, { limit: 1 });
+
+  if (listError) {
+    throw new Error(`Failed to verify storage: ${listError.message}`);
+  }
+
+  if (!files || files.length === 0) {
+    throw new Error("File not found in storage - cannot finalize contract");
+  }
+
+  // Step 4: Update contract status to active
   await db
     .update(contracts)
     .set({

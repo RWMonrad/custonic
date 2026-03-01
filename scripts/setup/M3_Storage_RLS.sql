@@ -50,22 +50,24 @@ with check (
   and coalesce((metadata->>'size')::bigint, 0) <= 20971520
 );
 
--- UPDATE: Users can only update files in their own orgs
-create policy "contracts_update_own_org"
-on storage.objects
-for update
-using (
-  bucket_id = 'contracts'
-  and exists (
-    select 1 
-    from public.org_members m 
-    where m.org_id = (split_part(name, '/', 1))::uuid 
-      and m.user_id = auth.uid()
-  )
-);
+-- UPDATE: DISABLED - no file modifications allowed (super-strict)
+-- Note: If updates are needed later, implement owner-only policy
+-- create policy "contracts_update_own_org"
+-- on storage.objects
+-- for update
+-- using (
+--   bucket_id = 'contracts'
+--   and exists (
+--     select 1 
+--     from public.org_members m 
+--     where m.org_id = (split_part(name, '/', 1))::uuid 
+--       and m.user_id = auth.uid()
+--       and m.role = 'owner'
+--   )
+-- );
 
--- DELETE: Users can only delete files in their own orgs
-create policy "contracts_delete_own_org"
+-- DELETE: Owner-only deletion
+create policy "contracts_delete_owner_only"
 on storage.objects
 for delete
 using (
@@ -75,6 +77,7 @@ using (
     from public.org_members m 
     where m.org_id = (split_part(name, '/', 1))::uuid 
       and m.user_id = auth.uid()
+      and m.role = 'owner'
   )
 );
 

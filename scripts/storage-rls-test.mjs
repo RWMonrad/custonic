@@ -84,6 +84,28 @@ async function main() {
     console.log("✅ Alice uploaded valid PDF successfully");
   }
 
+  // NEGATIVE: Alice tries to upload to wrong org path (path parsing test)
+  const wrongOrgPath = `contracts/00000000-0000-0000-0000-000000000000/wrong-org/test.pdf`;
+  const wrongOrgFile = new Blob(["%PDF-1.4 fake content"], {
+    type: "application/pdf",
+  });
+
+  console.log("🔍 TESTING: Alice uploading to wrong org path...");
+  const { error: wrongOrgError } = await alice.storage
+    .from("contracts")
+    .upload(wrongOrgPath, wrongOrgFile);
+
+  if (wrongOrgError) {
+    console.log(
+      "⚠️ Wrong org path upload blocked (expected):",
+      wrongOrgError.message,
+    );
+  } else {
+    console.log("❌ UNEXPECTED: Upload to wrong org path succeeded");
+    // Clean up if it somehow succeeded
+    await alice.storage.from("contracts").remove([wrongOrgPath]);
+  }
+
   // NEGATIVE: Bob tries to list Alice's files
   console.log("🔍 TESTING: Bob trying to list Alice files...");
   const { data: bobList, error: bobListError } = await bob.storage
@@ -124,6 +146,7 @@ async function main() {
   console.log("\n📋 Expected Results:");
   console.log("- Alice upload invalid MIME type: BLOCKED by storage policy");
   console.log("- Alice upload valid PDF: SUCCESS");
+  console.log("- Alice upload to wrong org path: BLOCKED by path parsing");
   console.log("- Bob list Alice files: 0 files or permission denied");
   console.log("- Bob download Alice file: BLOCKED");
   console.log("- Alice list own files: Should work");
