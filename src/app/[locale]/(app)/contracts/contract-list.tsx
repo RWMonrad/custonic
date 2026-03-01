@@ -1,16 +1,9 @@
+import type { ContractList } from "@/modules/contracts/lib/contracts";
 import { format } from "date-fns";
-
-interface Contract {
-  id: string;
-  title: string;
-  status: string;
-  file_url: string | null;
-  created_at: Date | null;
-  updated_at: Date | null;
-}
+import Link from "next/link";
 
 interface ContractListProps {
-  contracts: Contract[];
+  contracts: ContractList[];
 }
 
 export function ContractList({ contracts }: ContractListProps) {
@@ -96,7 +89,12 @@ export function ContractList({ contracts }: ContractListProps) {
                   </div>
                   <div className="ml-4">
                     <div className="text-sm font-medium text-gray-900">
-                      {contract.title}
+                      <Link
+                        href={`/contracts/${contract.id}`}
+                        className="text-primary hover:text-primary/80 hover:underline"
+                      >
+                        {contract.title}
+                      </Link>
                     </div>
                   </div>
                 </div>

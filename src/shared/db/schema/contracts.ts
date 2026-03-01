@@ -14,6 +14,7 @@ export const contractStatusEnum = pgEnum("contract_status", [
   "expired",
   "terminated",
   "pending_review",
+  "deleted",
 ]);
 
 export const contracts = pgTable("contracts", {

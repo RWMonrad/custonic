@@ -117,6 +117,53 @@ export async function getContractById(
   };
 }
 
+export async function renameContract({
+  orgId,
+  contractId,
+  title,
+}: {
+  orgId: string;
+  contractId: string;
+  title: string;
+}): Promise<void> {
+  await db
+    .update(contracts)
+    .set({
+      title,
+      updated_at: new Date(),
+    })
+    .where(
+      and(
+        eq(contracts.id, contractId),
+        eq(contracts.org_id, orgId),
+        isNull(contracts.deleted_at),
+      ),
+    );
+}
+
+export async function softDeleteContract({
+  orgId,
+  contractId,
+}: {
+  orgId: string;
+  contractId: string;
+}): Promise<void> {
+  await db
+    .update(contracts)
+    .set({
+      status: "deleted",
+      deleted_at: new Date(),
+      updated_at: new Date(),
+    })
+    .where(
+      and(
+        eq(contracts.id, contractId),
+        eq(contracts.org_id, orgId),
+        isNull(contracts.deleted_at),
+      ),
+    );
+}
+
 export async function finalizeContractUpload({
   contractId,
   filePath,
