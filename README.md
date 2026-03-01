@@ -70,8 +70,6 @@ Execute the RLS setup script in Supabase SQL Editor:
 #### Step 2: Verify RLS
 
 
-Run the verification script to ensure RLS is working:
-
 ```sql
 -- Copy the contents of scripts/verify_rls.sql
 -- and run it in your Supabase SQL Editor
@@ -121,7 +119,7 @@ See `scripts/setup/` for complete RLS implementation.
 
 ### Dependency Policy
 
-**⚠️ Important: No legacy-peer-deps**
+**Important:** No legacy-peer-deps
 
 - Never use `--force` or `--legacy-peer-deps` when installing dependencies
 - Always commit `package-lock.json` to ensure reproducible builds
