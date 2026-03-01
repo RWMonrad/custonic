@@ -13,28 +13,25 @@ const createOrgSchema = z.object({
     .max(100),
 });
 
-type CreateOrgState =
-  | {
-      error?: string;
-      fields?: {
-        name?: string[];
-      };
-    }
-  | null
-  | undefined;
+export type CreateOrgState = {
+  status: "idle" | "error" | "success";
+  message?: string;
+};
+
+export const initialCreateOrgState: CreateOrgState = { status: "idle" };
 
 export async function createOrganizationAction(
   prevState: CreateOrgState,
   formData: FormData,
-) {
+): Promise<CreateOrgState> {
   const validatedFields = createOrgSchema.safeParse({
     name: formData.get("name"),
   });
 
   if (!validatedFields.success) {
     return {
-      error: "Invalid organization name",
-      fields: validatedFields.error.flatten().fieldErrors,
+      status: "error",
+      message: "Invalid organization name",
     };
   }
 
@@ -42,7 +39,8 @@ export async function createOrganizationAction(
 
   if (!user) {
     return {
-      error: "You must be logged in to create an organization",
+      status: "error",
+      message: "You must be logged in to create an organization",
     };
   }
 
@@ -69,7 +67,8 @@ export async function createOrganizationAction(
   } catch (error) {
     console.error("Failed to create organization:", error);
     return {
-      error: "Failed to create organization. Please try again.",
+      status: "error",
+      message: "Failed to create organization. Please try again.",
     };
   }
 }

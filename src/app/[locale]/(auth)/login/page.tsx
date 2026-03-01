@@ -1,19 +1,25 @@
 "use client";
 
 import { Link } from "@/shared/i18n/navigation";
-import { useFormState } from "react-dom";
-import { signInAction } from "../actions";
+import { useFormState, useFormStatus } from "react-dom";
+import { initialAuthState, signInAction } from "../actions";
 
-type AuthState = {
-  error?: string;
-  fields?: {
-    email?: string[];
-    password?: string[];
-  };
-} | null;
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {pending ? "Signing in..." : "Sign in"}
+    </button>
+  );
+}
 
 export default function LoginPage() {
-  const [state, formAction] = useFormState(signInAction, null as AuthState);
+  const [state, formAction] = useFormState(signInAction, initialAuthState);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -33,9 +39,9 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {state?.error && (
+        {state?.status === "error" && (
           <div className="bg-destructive/10 border border-destructive text-destructive p-3 rounded-md">
-            {state.error}
+            {state.message}
           </div>
         )}
 
@@ -78,12 +84,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
-            >
-              Sign in
-            </button>
+            <SubmitButton />
           </div>
         </form>
       </div>

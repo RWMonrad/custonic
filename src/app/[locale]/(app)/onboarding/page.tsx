@@ -1,19 +1,26 @@
 "use client";
 
-import { useFormState } from "react-dom";
-import { createOrganizationAction } from "./actions";
+import { useFormState, useFormStatus } from "react-dom";
+import { createOrganizationAction, initialCreateOrgState } from "./actions";
 
-type CreateOrgState = {
-  error?: string;
-  fields?: {
-    name?: string[];
-  };
-} | null;
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {pending ? "Creating organization..." : "Create organization"}
+    </button>
+  );
+}
 
 export default function OnboardingPage() {
   const [state, formAction] = useFormState(
     createOrganizationAction,
-    null as CreateOrgState,
+    initialCreateOrgState,
   );
 
   return (
@@ -28,9 +35,9 @@ export default function OnboardingPage() {
           </p>
         </div>
 
-        {state?.error && (
+        {state?.status === "error" && (
           <div className="bg-destructive/10 border border-destructive text-destructive p-3 rounded-md">
-            {state.error}
+            {state.message}
           </div>
         )}
 
@@ -53,12 +60,7 @@ export default function OnboardingPage() {
           </div>
 
           <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
-            >
-              Create organization
-            </button>
+            <SubmitButton />
           </div>
         </form>
       </div>

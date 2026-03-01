@@ -9,18 +9,17 @@ const authSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-type AuthState =
-  | {
-      error?: string;
-      fields?: {
-        email?: string[];
-        password?: string[];
-      };
-    }
-  | null
-  | undefined;
+export type AuthState = {
+  status: "idle" | "error" | "success";
+  message?: string;
+};
 
-export async function signInAction(prevState: AuthState, formData: FormData) {
+export const initialAuthState: AuthState = { status: "idle" };
+
+export async function signInAction(
+  prevState: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
   const validatedFields = authSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -28,8 +27,8 @@ export async function signInAction(prevState: AuthState, formData: FormData) {
 
   if (!validatedFields.success) {
     return {
-      error: "Invalid email or password",
-      fields: validatedFields.error.flatten().fieldErrors,
+      status: "error",
+      message: "Invalid email or password",
     };
   }
 
@@ -43,14 +42,18 @@ export async function signInAction(prevState: AuthState, formData: FormData) {
 
   if (error) {
     return {
-      error: "Invalid email or password",
+      status: "error",
+      message: "Invalid email or password",
     };
   }
 
   redirect("/en/dashboard");
 }
 
-export async function signUpAction(prevState: AuthState, formData: FormData) {
+export async function signUpAction(
+  prevState: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
   const validatedFields = authSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -58,8 +61,8 @@ export async function signUpAction(prevState: AuthState, formData: FormData) {
 
   if (!validatedFields.success) {
     return {
-      error: "Invalid email or password",
-      fields: validatedFields.error.flatten().fieldErrors,
+      status: "error",
+      message: "Invalid email or password",
     };
   }
 
@@ -73,7 +76,8 @@ export async function signUpAction(prevState: AuthState, formData: FormData) {
 
   if (error) {
     return {
-      error: error.message,
+      status: "error",
+      message: error.message,
     };
   }
 
