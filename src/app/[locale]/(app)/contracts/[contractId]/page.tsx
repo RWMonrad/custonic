@@ -1,9 +1,11 @@
 import { AnalysisPanel } from "@/modules/analysis/components/AnalysisPanel";
 import { getLatestAnalysisForContract } from "@/modules/analysis/lib/queries";
+import { adaptAnalysisForClient } from "@/modules/analysis/lib/type-adapter";
 import { getCurrentOrgIdOrThrow } from "@/modules/auth/lib/current-org";
 import { ContractDetailActions } from "@/modules/contracts/components/contract-detail-actions";
 import { getContractById } from "@/modules/contracts/lib/contracts";
 import { format } from "date-fns";
+import AppLayout from "../../layout";
 
 interface ContractDetailPageProps {
   params: {
@@ -45,7 +47,11 @@ export default async function ContractDetailPage({
     }
 
     // Get latest analysis for this contract
-    const analysis = await getLatestAnalysisForContract(contractId, orgId);
+    const serverAnalysis = await getLatestAnalysisForContract(
+      contractId,
+      orgId,
+    );
+    const analysis = adaptAnalysisForClient(serverAnalysis);
 
     // Extract file name from file_url
     const fileName = contract.file_url
@@ -53,66 +59,16 @@ export default async function ContractDetailPage({
       : "No file";
 
     return (
-      <div className="container mx-auto py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">{contract.title}</h1>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Contract Details */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="text-xl font-semibold mb-4">Contract Details</h2>
-
-              <dl className="space-y-4">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Status</dt>
-                  <dd className="mt-1">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        contract.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : contract.status === "draft"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : contract.status === "expired"
-                              ? "bg-red-100 text-red-800"
-                              : contract.status === "terminated"
-                                ? "bg-gray-100 text-gray-800"
-                                : contract.status === "pending_review"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {contract.status}
-                    </span>
-                  </dd>
-                </div>
-
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Created</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {format(contract.created_at || new Date(), "PPP")}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">
-                    File Name
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-900">{fileName}</dd>
-                </div>
-
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">
-                    File Path
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-500 font-mono break-all">
-                    {contract.file_url || "No file"}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-
+      <AppLayout>
+        <div className="p-6 space-y-6">
+          {/* Header */}
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              {contract.title}
+            </h1>
+            <p className="text-muted-foreground">
+              Contract analysis and risk assessment
+            </p>
             {/* Status Timeline */}
             <div className="bg-white rounded-lg border p-6 mt-6">
               <h2 className="text-xl font-semibold mb-4">Status Timeline</h2>
@@ -244,7 +200,7 @@ export default async function ContractDetailPage({
             <ContractDetailActions contract={contract} />
           </div>
         </div>
-      </div>
+      </AppLayout>
     );
   } catch (error) {
     // Handle authentication errors gracefully

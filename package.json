@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "gate": "npm run typecheck && npm run lint && npm run build",
     "test:rls": "node scripts/rls-smoketest.mjs",
     "test:storage-rls": "node scripts/storage-rls-test.mjs",
     "test:m4-download": "node scripts/m4-download-test.mjs",

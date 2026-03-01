@@ -7,7 +7,7 @@ import {
 import { ContractList } from "@/modules/contracts/lib/contracts";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import { AnalysisWithFindings, parseAnalysisMetadata } from "../lib/queries";
+import { AnalysisWithFindings, parseAnalysisMetadata } from "../types/analysis";
 import { FindingsFilters } from "./FindingsFilters";
 import { FindingsList } from "./FindingsList";
 import { FindingsSummary } from "./FindingsSummary";
@@ -118,7 +118,7 @@ export function AnalysisPanel({ contract, analysis }: AnalysisPanelProps) {
       }
       if (
         filters.riskTypes.length > 0 &&
-        !filters.riskTypes.includes(finding.category)
+        !filters.riskTypes.includes(finding.type)
       ) {
         return false;
       }

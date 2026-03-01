@@ -134,7 +134,26 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ```bash
 npm run typecheck  # TypeScript compilation
 npm run build      # Production build
+npm run gate       # Full CI pipeline (typecheck + lint + build)
 ```
+
+### TypeScript Cache Issues
+
+If you see red import errors in IDE but TypeScript compilation passes:
+
+```bash
+# Restart TypeScript server
+# VS Code: Cmd+Shift+P -> "TypeScript: Restart TS Server"
+
+# Reopen workspace
+# Close and reopen the project folder
+
+# Nuclear option (if needed)
+rm -rf .next node_modules
+npm install
+```
+
+This resolves IDE cache issues where imports show as errors but actually work.
 
 ## Project Structure
 
