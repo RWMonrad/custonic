@@ -2,6 +2,7 @@
 // Tests the complete AI pipeline with synthetic contracts
 
 import { createClient } from "@supabase/supabase-js";
+import { spawn } from "child_process";
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -135,7 +136,7 @@ async function createContract(fixtureName, fixture, storageInfo) {
         title: `Test Contract - ${fixtureName}`,
         file_url: storageInfo.storagePath,
         mime_type: fixture.mimeType,
-        size_bytes: require("fs").statSync(join(__dirname, fixture.path)).size,
+        size_bytes: statSync(join(__dirname, fixture.path)).size,
         status: "active",
       })
       .select()
@@ -296,7 +297,7 @@ async function verifyResults(analysis) {
           truncated: metadata.truncated,
           chunksProcessed: metadata.chunksProcessed,
         });
-      } catch (e) {
+      } catch {
         console.log(`⚠️ Could not parse analysis metadata`);
       }
     }
