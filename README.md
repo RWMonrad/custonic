@@ -4,7 +4,9 @@
 
 Custonic is a B2B SaaS platform for contract monitoring and analysis. It's part of a comprehensive suite that follows the narrative:
 
-**Create proposals (QA) → Monitor contracts (Custonic) → Negotiate better terms (VNA) → Predict churn (RL)**
+### Platform Narrative
+
+Create proposals (QA) → Monitor contracts (Custonic) → Negotiate better terms (VNA) → Predict churn (RL)
 
 ## Tech Stack
 
@@ -63,10 +65,11 @@ npm start
 
 **⚠️ Important: No legacy-peer-deps**
 
-
 - Never use `--force` or `--legacy-peer-deps` when installing dependencies
 - Always commit `package-lock.json` to ensure reproducible builds
 - If you encounter ERESOLVE errors, fix the underlying dependency conflict rather than bypassing it
+
+### Quick Start
 
 1. Open [http://localhost:3000](http://localhost:3000) in your browser
 
