@@ -60,21 +60,49 @@ npm install
 
 ### Database Setup
 
-#### Step 1: Run RLS Setup
+#### Step 1: Run RLS Core Pack
 
 Execute the RLS setup script in Supabase SQL Editor:
 
 ```sql
--- Copy the contents of scripts/setup/setup_rls.sql
+-- Copy the contents of scripts/setup/M2_RLS_Core_Pack.sql
 -- and run it in your Supabase SQL Editor
 ```
 
-#### Step 2: Verify RLS
+This script:
 
-```sql
--- Copy the contents of scripts/verify_rls.sql
--- and run it in your Supabase SQL Editor
+- Enables RLS on all tables
+- Creates helper functions for org membership checks
+- Sets up policies for users, organizations, org_members
+- Creates secure RPC function for org creation
+- Automatically applies org-scoped policies to future tables
+
+#### Step 2: Test RLS with Smoke Test
+
+Run the smoke test to verify RLS is working correctly:
+
+```bash
+# Add test users to .env.local (do not commit):
+# TEST_ALICE_EMAIL=alice+custonic@yourdomain.com
+# TEST_ALICE_PASS=alice_password
+# TEST_BOB_EMAIL=bob+custonic@yourdomain.com
+# TEST_BOB_PASS=bob_password
+
+node scripts/rls-smoketest.mjs
 ```
+
+Or use the npm script:
+
+```bash
+npm run test:rls
+```
+
+Expected results:
+
+- Alice cannot see Bob's organization
+- Alice cannot insert into Bob's organization
+- Users can only access their own data
+- Cross-org operations fail with policy errors
 
 ### Development
 
