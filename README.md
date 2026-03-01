@@ -2,11 +2,13 @@
 
 ## Overview
 
-Custonic is a B2B SaaS platform for contract monitoring and analysis. It's part of a comprehensive suite that follows the narrative:
+Custonic is a B2B SaaS platform for contract monitoring and analysis.
+It's part of a comprehensive suite that follows the narrative:
 
 ### Platform Narrative
 
-Create proposals (QA) → Monitor contracts (Custonic) → Negotiate better terms (VNA) → Predict churn (RL)
+Create proposals (QA) → Monitor contracts (Custonic) →
+Negotiate better terms (VNA) → Predict churn (RL)
 
 ## Tech Stack
 
@@ -69,7 +71,6 @@ Execute the RLS setup script in Supabase SQL Editor:
 
 #### Step 2: Verify RLS
 
-
 ```sql
 -- Copy the contents of scripts/verify_rls.sql
 -- and run it in your Supabase SQL Editor
@@ -92,7 +93,7 @@ npm run build      # Production build
 
 ## Project Structure
 
-```
+```text
 src/
 ├── app/              # Next.js App Router
 ├── components/       # Reusable UI components
@@ -110,27 +111,39 @@ src/
 
 This application implements database-level security using Supabase RLS:
 
-- **Users** can only access their own data
-- **Organizations** are scoped to member access
-- **All operations** go through security policies
-- **Atomic operations** use secure RPC functions
+- Users can only access their own data
+- Organizations are scoped to member access
+- All operations go through security policies
+- Atomic operations use secure RPC functions
 
 See `scripts/setup/` for complete RLS implementation.
 
 ### Dependency Policy
 
-**Important:** No legacy-peer-deps
+Important: No legacy-peer-deps
 
-- Never use `--force` or `--legacy-peer-deps` when installing dependencies
+- Never use `--force` or `--legacy-peer-deps` when installing
+  dependencies
 - Always commit `package-lock.json` to ensure reproducible builds
-- If you encounter ERESOLVE errors, fix the underlying dependency conflict rather than bypassing it
+- If you encounter ERESOLVE errors, fix the underlying dependency
+  conflict rather than bypassing it
+
+### Documentation Standards
+
+This project follows consistent documentation patterns:
+
+- Important: Use for critical information that requires attention
+- Warning: Use for potential issues or breaking changes
+
+Note: Avoid emojis at paragraph start and standalone bold lines to
+prevent markdown linting issues.
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add some new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
 5. Open a Pull Request
 
 ## License
@@ -143,4 +156,4 @@ Rune W. Monrad - [@rune](https://github.com/RWMonrad)
 
 ---
 
-_Document prepared March 1, 2026 | Monrad Ruzt Technology_
+Document prepared March 1, 2026 | Monrad Ruzt Technology
