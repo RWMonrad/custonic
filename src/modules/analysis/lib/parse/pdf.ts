@@ -1,8 +1,10 @@
+import { Buffer } from "buffer";
+// @ts-ignore - pdf-parse doesn't have proper TypeScript definitions
 const pdf = require("pdf-parse");
 
 export interface ParseResult {
   text: string;
-  pageHints?: any[];
+  pageHints?: Array<{ page: number }>;
   meta: {
     charCount: number;
     lineCount: number;
@@ -10,10 +12,7 @@ export interface ParseResult {
   };
 }
 
-export async function parsePDF(
-  buffer: Buffer,
-  filename: string,
-): Promise<ParseResult> {
+export async function parsePDF(buffer: Buffer): Promise<ParseResult> {
   try {
     const data = await pdf(buffer);
 

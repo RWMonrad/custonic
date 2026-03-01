@@ -36,7 +36,6 @@ export async function orchestrateAnalysis(
   fileBuffer: Buffer,
   aiConfig: AIConfig,
 ): Promise<OrchestrationResult> {
-  const startTime = Date.now();
   let parseTime = 0;
   let analysisTime = 0;
   let totalTokens = 0;
@@ -46,11 +45,7 @@ export async function orchestrateAnalysis(
     console.log(`📄 Parsing contract ${job.contractId}`);
     const parseStart = Date.now();
 
-    const parseResult = await parseContractToText(
-      fileBuffer,
-      job.mimeType,
-      job.filename,
-    );
+    const parseResult = await parseContractToText(fileBuffer, job.mimeType);
     parseTime = Date.now() - parseStart;
 
     console.log(

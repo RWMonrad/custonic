@@ -10,8 +10,6 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 // AI Configuration
 const AI_PROVIDER = process.env.AI_PROVIDER || "mock";
 const AI_MODEL = process.env.AI_MODEL;
-const AI_MAX_CHUNKS = parseInt(process.env.AI_MAX_CHUNKS || "30");
-const AI_MAX_FINDINGS = parseInt(process.env.AI_MAX_FINDINGS || "40");
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error("❌ Missing Supabase service role configuration");
@@ -35,42 +33,6 @@ try {
 
 // Service role client for worker (bypasses RLS)
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-// Simulated analysis findings generator
-function generateDummyFindings(analysisId, orgId, contractId) {
-  const severities = ["low", "medium", "high", "critical"];
-  const categories = [
-    "legal",
-    "financial",
-    "operational",
-    "compliance",
-    "reputational",
-  ];
-
-  const findings = [];
-  const numFindings = Math.floor(Math.random() * 4) + 2; // 2-5 findings
-
-  for (let i = 0; i < numFindings; i++) {
-    const severity = severities[Math.floor(Math.random() * severities.length)];
-    const category = categories[Math.floor(Math.random() * categories.length)];
-
-    findings.push({
-      id: crypto.randomUUID(),
-      org_id: orgId,
-      contract_id: contractId,
-      analysis_id: analysisId,
-      title: `Risk Finding ${i + 1}`,
-      description: `This is a simulated ${severity} risk in the ${category} category that was identified during analysis.`,
-      severity,
-      category,
-      confidence_score: Math.floor(Math.random() * 30) + 70, // 70-100
-      recommendation: `Recommend addressing this ${severity} risk through appropriate measures.`,
-      is_resolved: false,
-    });
-  }
-
-  return findings;
-}
 
 // Process a single analysis job with AI pipeline
 async function processAnalysisJob(analysis) {

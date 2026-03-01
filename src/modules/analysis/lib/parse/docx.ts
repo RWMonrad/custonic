@@ -1,8 +1,9 @@
+import { Buffer } from "buffer";
 import mammoth from "mammoth";
 
 export interface ParseResult {
   text: string;
-  pageHints?: any[];
+  pageHints?: Array<{ page: number }>;
   meta: {
     charCount: number;
     lineCount: number;
@@ -10,10 +11,7 @@ export interface ParseResult {
   };
 }
 
-export async function parseDOCX(
-  buffer: Buffer,
-  filename: string,
-): Promise<ParseResult> {
+export async function parseDOCX(buffer: Buffer): Promise<ParseResult> {
   try {
     const result = await mammoth.extractRawText({ buffer });
 
@@ -22,7 +20,7 @@ export async function parseDOCX(
     }
 
     // Clean up DOCX parsing artifacts
-    let cleanedText = result.value
+    const cleanedText = result.value
       .replace(/\r\n/g, "\n") // Normalize line endings
       .replace(/\n{3,}/g, "\n\n") // Normalize multiple newlines
       .trim();

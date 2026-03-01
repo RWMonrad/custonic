@@ -3,7 +3,7 @@ import { parsePDF } from "./pdf";
 
 export interface ParseResult {
   text: string;
-  pageHints?: any[];
+  pageHints?: Array<{ page: number }>;
   meta: {
     charCount: number;
     lineCount: number;
@@ -14,14 +14,13 @@ export interface ParseResult {
 export async function parseContractToText(
   buffer: Buffer,
   mimeType: string,
-  filename: string,
 ): Promise<ParseResult> {
   switch (mimeType) {
     case "application/pdf":
-      return await parsePDF(buffer, filename);
+      return await parsePDF(buffer);
 
     case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      return await parseDOCX(buffer, filename);
+      return await parseDOCX(buffer);
 
     default:
       throw new Error(`Unsupported file type: ${mimeType}`);
@@ -29,3 +28,4 @@ export async function parseContractToText(
 }
 
 export { parseDOCX, parsePDF };
+export type { ParseResult };
