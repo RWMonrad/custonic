@@ -27,36 +27,40 @@ Custonic is a B2B SaaS platform for contract monitoring and analysis. It's part 
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Supabase account
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/RWMonrad/custonic.git
 cd custonic
 ```
 
-2. Install dependencies:
+1. Install dependencies:
+
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+1. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
-4. Configure your Supabase project in `.env.local`
+1. Configure your Supabase project in `.env.local`
 
-5. Run the development server:
+2. Run the development server:
+
 ```bash
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
+1. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Project Structure
 
@@ -87,4 +91,4 @@ Rune W. Monrad - [@rune](https://github.com/RWMonrad)
 
 ---
 
-*Document prepared February 25, 2026 | Monrad Ruzt Technology*
+_Document prepared February 25, 2026 | Monrad Ruzt Technology_
