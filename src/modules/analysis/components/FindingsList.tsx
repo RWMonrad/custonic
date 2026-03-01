@@ -1,41 +1,43 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { FindingCard } from './FindingCard'
+import { useState } from "react";
+import { FindingCard } from "./FindingCard";
 
 interface Finding {
-  id: string
-  title: string
-  description: string
-  severity: string
-  category: string
-  confidenceScore: number
-  recommendation: string
+  id: string;
+  title: string;
+  description: string;
+  severity: string;
+  category: string;
+  confidenceScore: number;
+  recommendation: string;
   citations: Array<{
-    excerpt: string
-    chunkIndex: number
-    startHint?: string
-    endHint?: string
-  }>
-  createdAt: Date
+    excerpt: string;
+    chunkIndex: number;
+    startHint?: string;
+    endHint?: string;
+  }>;
+  createdAt: Date;
 }
 
 interface FindingsListProps {
-  findings: Finding[]
+  findings: Finding[];
 }
 
 export function FindingsList({ findings }: FindingsListProps) {
-  const [expandedFindings, setExpandedFindings] = useState<Set<string>>(new Set())
+  const [expandedFindings, setExpandedFindings] = useState<Set<string>>(
+    new Set(),
+  );
 
   const toggleExpanded = (findingId: string) => {
-    const newExpanded = new Set(expandedFindings)
+    const newExpanded = new Set(expandedFindings);
     if (newExpanded.has(findingId)) {
-      newExpanded.delete(findingId)
+      newExpanded.delete(findingId);
     } else {
-      newExpanded.add(findingId)
+      newExpanded.add(findingId);
     }
-    setExpandedFindings(newExpanded)
-  }
+    setExpandedFindings(newExpanded);
+  };
 
   if (findings.length === 0) {
     return (
@@ -43,15 +45,13 @@ export function FindingsList({ findings }: FindingsListProps) {
         <p className="text-sm">No findings match your current filters.</p>
         <p className="text-xs mt-1">Try adjusting your filter criteria.</p>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium">
-          Findings ({findings.length})
-        </h4>
+        <h4 className="text-sm font-medium">Findings ({findings.length})</h4>
         <div className="text-xs text-gray-500">
           Ordered by severity and confidence
         </div>
@@ -66,5 +66,5 @@ export function FindingsList({ findings }: FindingsListProps) {
         />
       ))}
     </div>
-  )
+  );
 }

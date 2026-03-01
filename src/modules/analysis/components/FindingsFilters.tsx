@@ -1,56 +1,61 @@
-'use client'
-
-import { useState } from 'react'
+"use client";
 
 interface Finding {
-  severity: string
-  category: string
+  severity: string;
+  category: string;
 }
 
 interface Filters {
-  severities: string[]
-  riskTypes: string[]
-  search: string
+  severities: string[];
+  riskTypes: string[];
+  search: string;
 }
 
 interface FindingsFiltersProps {
-  filters: Filters
-  onFiltersChange: (filters: Filters) => void
-  findings: Finding[]
+  filters: Filters;
+  onFiltersChange: (filters: Filters) => void;
+  findings: Finding[];
 }
 
 const SEVERITY_OPTIONS = [
-  { value: 'critical', label: 'Critical', color: 'text-red-600' },
-  { value: 'high', label: 'High', color: 'text-orange-600' },
-  { value: 'medium', label: 'Medium', color: 'text-yellow-600' },
-  { value: 'low', label: 'Low', color: 'text-blue-600' }
-]
+  { value: "critical", label: "Critical", color: "text-red-600" },
+  { value: "high", label: "High", color: "text-orange-600" },
+  { value: "medium", label: "Medium", color: "text-yellow-600" },
+  { value: "low", label: "Low", color: "text-blue-600" },
+];
 
-export function FindingsFilters({ filters, onFiltersChange, findings }: FindingsFiltersProps) {
+export function FindingsFilters({
+  filters,
+  onFiltersChange,
+  findings,
+}: FindingsFiltersProps) {
   // Get unique risk types from findings
-  const riskTypes = Array.from(new Set(findings.map(f => f.category))).sort()
+  const riskTypes = Array.from(new Set(findings.map((f) => f.category))).sort();
 
   const handleSeverityToggle = (severity: string) => {
     const newSeverities = filters.severities.includes(severity)
-      ? filters.severities.filter(s => s !== severity)
-      : [...filters.severities, severity]
-    
-    onFiltersChange({ ...filters, severities: newSeverities })
-  }
+      ? filters.severities.filter((s) => s !== severity)
+      : [...filters.severities, severity];
+
+    onFiltersChange({ ...filters, severities: newSeverities });
+  };
 
   const handleRiskTypeChange = (riskType: string) => {
-    onFiltersChange({ ...filters, riskTypes: riskType ? [riskType] : [] })
-  }
+    onFiltersChange({ ...filters, riskTypes: riskType ? [riskType] : [] });
+  };
 
   const handleSearchChange = (search: string) => {
-    onFiltersChange({ ...filters, search })
-  }
+    onFiltersChange({ ...filters, search });
+  };
 
   const clearAllFilters = () => {
-    onFiltersChange({ severities: [], riskTypes: [], search: '' })
-  }
+    onFiltersChange({ severities: [], riskTypes: [], search: "" });
+  };
 
-  const hasActiveFilters = filters.severities.length > 0 || filters.riskTypes.length > 0 || filters.search.length > 0
+  const hasActiveFilters =
+    filters.severities.length > 0 ||
+    filters.riskTypes.length > 0 ||
+    filters.search.length > 0;
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
@@ -73,7 +78,7 @@ export function FindingsFilters({ filters, onFiltersChange, findings }: Findings
             Severity
           </label>
           <div className="space-y-1">
-            {SEVERITY_OPTIONS.map(option => (
+            {SEVERITY_OPTIONS.map((option) => (
               <label key={option.value} className="flex items-center">
                 <input
                   type="checkbox"
@@ -81,7 +86,9 @@ export function FindingsFilters({ filters, onFiltersChange, findings }: Findings
                   onChange={() => handleSeverityToggle(option.value)}
                   className="mr-2 h-3 w-3 text-primary border-gray-300 rounded focus:ring-primary"
                 />
-                <span className={`text-xs ${option.color}`}>{option.label}</span>
+                <span className={`text-xs ${option.color}`}>
+                  {option.label}
+                </span>
               </label>
             ))}
           </div>
@@ -93,14 +100,16 @@ export function FindingsFilters({ filters, onFiltersChange, findings }: Findings
             Risk Type
           </label>
           <select
-            value={filters.riskTypes[0] || ''}
+            value={filters.riskTypes[0] || ""}
             onChange={(e) => handleRiskTypeChange(e.target.value)}
             className="w-full text-xs border-gray-300 rounded-md focus:ring-primary focus:border-primary"
           >
             <option value="">All types</option>
-            {riskTypes.map(type => (
+            {riskTypes.map((type) => (
               <option key={type} value={type}>
-                {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                {type
+                  .replace("_", " ")
+                  .replace(/\b\w/g, (l) => l.toUpperCase())}
               </option>
             ))}
           </select>
@@ -125,7 +134,7 @@ export function FindingsFilters({ filters, onFiltersChange, findings }: Findings
       {hasActiveFilters && (
         <div className="mt-4 pt-3 border-t border-gray-200">
           <div className="flex flex-wrap gap-2">
-            {filters.severities.map(severity => (
+            {filters.severities.map((severity) => (
               <span
                 key={severity}
                 className="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded"
@@ -139,14 +148,16 @@ export function FindingsFilters({ filters, onFiltersChange, findings }: Findings
                 </button>
               </span>
             ))}
-            {filters.riskTypes.map(riskType => (
+            {filters.riskTypes.map((riskType) => (
               <span
                 key={riskType}
                 className="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded"
               >
-                {riskType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                {riskType
+                  .replace("_", " ")
+                  .replace(/\b\w/g, (l) => l.toUpperCase())}
                 <button
-                  onClick={() => handleRiskTypeChange('')}
+                  onClick={() => handleRiskTypeChange("")}
                   className="ml-1 text-gray-400 hover:text-gray-600"
                 >
                   ×
@@ -157,7 +168,7 @@ export function FindingsFilters({ filters, onFiltersChange, findings }: Findings
               <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded">
                 "{filters.search}"
                 <button
-                  onClick={() => handleSearchChange('')}
+                  onClick={() => handleSearchChange("")}
                   className="ml-1 text-gray-400 hover:text-gray-600"
                 >
                   ×
@@ -168,5 +179,5 @@ export function FindingsFilters({ filters, onFiltersChange, findings }: Findings
         </div>
       )}
     </div>
-  )
+  );
 }

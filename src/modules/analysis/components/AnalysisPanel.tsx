@@ -2,7 +2,7 @@
 
 import {
     enqueueAnalysisAction,
-    initialEnqueueAnalysisState
+    initialEnqueueAnalysisState,
 } from "@/app/[locale]/(app)/contracts/[contractId]/analysis-actions";
 import { ContractList } from "@/modules/contracts/lib/contracts";
 import { useState } from "react";
