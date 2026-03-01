@@ -31,7 +31,7 @@ using (
   )
 );
 
--- INSERT: Users can only upload to their own orgs
+-- INSERT: Users can only upload to their own orgs with valid file types and sizes
 create policy "contracts_insert_own_org"
 on storage.objects
 for insert
@@ -43,6 +43,11 @@ with check (
     where m.org_id = (split_part(name, '/', 1))::uuid 
       and m.user_id = auth.uid()
   )
+  and (metadata->>'mimetype') in (
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  )
+  and coalesce((metadata->>'size')::bigint, 0) <= 20971520
 );
 
 -- UPDATE: Users can only update files in their own orgs

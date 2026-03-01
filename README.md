@@ -104,6 +104,23 @@ Expected results:
 - Users can only access their own data
 - Cross-org operations fail with policy errors
 
+#### Step 3: Test Storage Security
+
+Verify storage RLS policies block invalid files:
+
+```bash
+npm run test:storage-rls
+```
+
+Expected results:
+
+- Alice cannot see Bob's organization
+- Alice cannot insert into Bob's organization
+- Users can only access their own data
+- Cross-org operations fail with policy errors
+- Invalid MIME types blocked by storage policy
+- File size limits enforced at storage level
+
 ### Development
 
 ```bash
