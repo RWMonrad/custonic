@@ -1,15 +1,8 @@
-'use client'
+"use client";
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from '@/shared/db/schema'
+import { createClient } from "@supabase/supabase-js";
 
-let supabaseClient: ReturnType<typeof createClientComponentClient<Database>> | null = null
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export function getSupabaseClient() {
-  if (!supabaseClient) {
-    supabaseClient = createClientComponentClient<Database>()
-  }
-  return supabaseClient
-}
-
-export const supabase = getSupabaseClient()
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
