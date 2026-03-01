@@ -43,6 +43,7 @@ export const riskFindings = pgTable("risk_findings", {
   category: riskCategoryEnum("category").notNull(),
   confidence_score: integer("confidence_score"), // 0-100
   recommendation: text("recommendation"),
+  citations: text("citations"), // JSON array of citations
   is_resolved: boolean("is_resolved").default(false),
   resolved_at: timestamp("resolved_at"),
   resolved_by: uuid("resolved_by"),

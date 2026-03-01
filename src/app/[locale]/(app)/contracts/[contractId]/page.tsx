@@ -1,4 +1,5 @@
-import { ContractAnalysis } from "@/modules/analysis/components/contract-analysis";
+import { AnalysisPanel } from "@/modules/analysis/components/AnalysisPanel";
+import { getLatestAnalysisForContract } from "@/modules/analysis/lib/queries";
 import { getCurrentOrgIdOrThrow } from "@/modules/auth/lib/current-org";
 import { ContractDetailActions } from "@/modules/contracts/components/contract-detail-actions";
 import { getContractById } from "@/modules/contracts/lib/contracts";
@@ -14,26 +15,37 @@ interface ContractDetailPageProps {
 export default async function ContractDetailPage({
   params,
 }: ContractDetailPageProps) {
-  try {
-    const orgId = await getCurrentOrgIdOrThrow();
-    const contract = await getContractById(params.contractId);
+  const { contractId } = params;
 
-    // Return 404-like UI if contract not found (no data leakage)
+  try {
+    // Get current org and verify contract access
+    const orgId = await getCurrentOrgIdOrThrow();
+    const contract = await getContractById(contractId);
+
     if (!contract) {
       return (
         <div className="container mx-auto py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-semibold text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">
               Contract Not Found
             </h1>
-            <p className="mt-2 text-gray-600">
+            <p className="text-gray-600 mb-8">
               The contract you're looking for doesn't exist or you don't have
               access to it.
             </p>
+            <a
+              href="/contracts"
+              className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+            >
+              Back to Contracts
+            </a>
           </div>
         </div>
       );
     }
+
+    // Get latest analysis for this contract
+    const analysis = await getLatestAnalysisForContract(contractId, orgId);
 
     // Extract file name from file_url
     const fileName = contract.file_url
@@ -228,7 +240,7 @@ export default async function ContractDetailPage({
 
           {/* Actions Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            <ContractAnalysis contract={contract} />
+            <AnalysisPanel contract={contract} analysis={analysis} />
             <ContractDetailActions contract={contract} />
           </div>
         </div>

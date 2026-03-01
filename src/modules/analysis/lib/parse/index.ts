@@ -28,4 +28,3 @@ export async function parseContractToText(
 }
 
 export { parseDOCX, parsePDF };
-export type { ParseResult };

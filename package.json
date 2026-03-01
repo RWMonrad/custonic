@@ -11,6 +11,7 @@
     "test:rls": "node scripts/rls-smoketest.mjs",
     "test:storage-rls": "node scripts/storage-rls-test.mjs",
     "test:m4-download": "node scripts/m4-download-test.mjs",
+    "test:m6-fixtures": "node scripts/m6-fixture-run.mjs",
     "worker:analysis": "node scripts/analysis-worker.mjs"
   },
   "dependencies": {
