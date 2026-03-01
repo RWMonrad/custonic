@@ -1,8 +1,6 @@
 "use server";
 
-import { db } from "@/shared/db";
-import { organizations, orgMembers } from "@/shared/db/schema";
-import { getAuthenticatedUser } from "@/shared/lib/supabase/server";
+import { createServerSupabaseClient } from "@/shared/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -35,33 +33,22 @@ export async function createOrganizationAction(
     };
   }
 
-  const user = await getAuthenticatedUser();
-
-  if (!user) {
-    return {
-      status: "error",
-      message: "You must be logged in to create an organization",
-    };
-  }
-
   const { name } = validatedFields.data;
+  const supabase = await createServerSupabaseClient();
 
   try {
-    // Create organization
-    const [org] = await db
-      .insert(organizations)
-      .values({
-        name,
-        slug: name.toLowerCase().replace(/\s+/g, "-"),
-      })
-      .returning();
-
-    // Add user as owner
-    await db.insert(orgMembers).values({
-      org_id: org.id,
-      user_id: user.id,
-      role: "owner",
+    // Use the secure RPC function instead of direct DB inserts
+    const { error } = await supabase.rpc("create_org_and_make_owner", {
+      org_name: name,
     });
+
+    if (error) {
+      console.error("RPC error:", error);
+      return {
+        status: "error",
+        message: "Failed to create organization. Please try again.",
+      };
+    }
 
     redirect("/en/dashboard");
   } catch (error) {

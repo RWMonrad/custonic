@@ -30,36 +30,101 @@ Create proposals (QA) → Monitor contracts (Custonic) → Negotiate better term
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- Supabase project
+- Environment variables configured
+
+### Environment Setup
+
+1. Copy environment variables:
+
+```bash
+cp .env.example .env.local
+```
+
+1. Configure your Supabase credentials in `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+DATABASE_URL=your_database_url
+```
 
 ### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/RWMonrad/custonic.git
-cd custonic
-
-# Install dependencies
 npm install
+```
 
-# Copy environment variables
-cp .env.example .env.local
+### Database Setup
 
-# Set up your Supabase project and update .env.local
+#### Step 1: Run RLS Setup
+
+Execute the RLS setup script in Supabase SQL Editor:
+
+```sql
+-- Copy the contents of scripts/setup/setup_rls.sql
+-- and run it in your Supabase SQL Editor
+```
+
+#### Step 2: Verify RLS
+
+upabase SQL Editor
+
+````
+
+#### Step 2: Verify RLS
+
+Run the verification script to ensure RLS is working:
+
+```sql
+-- Copy the contents of scripts/verify_rls.sql
+-- and run it in your Supabase SQL Editor
+`-- Copy the contents of scripts/verify_rls.sql
+-- and run it in your Supabase SQL Editor
 ```
 
 ### Development
 
 ```bash
-# Start development server
 npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
 ```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Build & Type Check
+
+```bash
+npm run typecheck  # TypeScript compilation
+npm run build      # Production build
+```
+
+## Project Structure
+
+```
+src/
+├── app/              # Next.js App Router
+├── components/       # Reusable UI components
+├── shared/           # Shared utilities and configurations
+│   ├── db/          # Database schemas and queries
+│   ├── lib/         # Utility functions
+│   └── i18n/        # Internationalization
+├── scripts/         # Database setup scripts
+└── types/           # TypeScript type definitions
+```
+
+## Security
+
+### Row Level Security (RLS)
+
+This application implements database-level security using Supabase RLS:
+
+- **Users** can only access their own data
+- **Organizations** are scoped to member access
+- **All operations** go through security policies
+- **Atomic operations** use secure RPC functions
+
+See `scripts/setup/` for complete RLS implementation.
 
 ### Dependency Policy
 
@@ -68,21 +133,6 @@ npm start
 - Never use `--force` or `--legacy-peer-deps` when installing dependencies
 - Always commit `package-lock.json` to ensure reproducible builds
 - If you encounter ERESOLVE errors, fix the underlying dependency conflict rather than bypassing it
-
-### Quick Start
-
-1. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Project Structure
-
-```
-src/
-├── app/              # Next.js App Router
-├── components/       # Reusable UI components
-├── lib/             # Utility functions and configurations
-├── types/           # TypeScript type definitions
-└── styles/          # Global styles
-```
 
 ## Contributing
 
@@ -102,4 +152,4 @@ Rune W. Monrad - [@rune](https://github.com/RWMonrad)
 
 ---
 
-_Document prepared February 25, 2026 | Monrad Ruzt Technology_
+_Document prepared March 1, 2026 | Monrad Ruzt Technology_
