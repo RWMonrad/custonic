@@ -69,18 +69,11 @@ Execute the RLS setup script in Supabase SQL Editor:
 
 #### Step 2: Verify RLS
 
-upabase SQL Editor
-
-````
-
-#### Step 2: Verify RLS
 
 Run the verification script to ensure RLS is working:
 
 ```sql
 -- Copy the contents of scripts/verify_rls.sql
--- and run it in your Supabase SQL Editor
-`-- Copy the contents of scripts/verify_rls.sql
 -- and run it in your Supabase SQL Editor
 ```
 
