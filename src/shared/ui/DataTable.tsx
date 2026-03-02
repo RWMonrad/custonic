@@ -6,12 +6,12 @@ import { useState } from "react";
 import { Button } from "./Button";
 import { Card, CardContent, CardHeader, CardTitle } from "./Card";
 
-interface Column<T> {
+export type Column<T = Record<string, unknown>> = {
   key: keyof T;
   title: string;
   sortable?: boolean;
   render?: (value: unknown, row: T) => React.ReactNode;
-}
+};
 
 interface DataTableProps<T> {
   data: T[];
@@ -24,7 +24,7 @@ interface DataTableProps<T> {
 
 type SortDirection = "asc" | "desc" | null;
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends Record<string, unknown> & { id: string }>({
   data,
   columns,
   onRowClick,
@@ -129,7 +129,7 @@ export function DataTable<T extends Record<string, unknown>>({
             <tbody className="divide-y divide-border">
               {filteredAndSortedData.map((row) => (
                 <tr
-                  key={row.id}
+                  key={row.id as string}
                   className={cn(
                     "hover:bg-background cursor-pointer transition-colors",
                     selectedRowId === row.id && "bg-primary/5",
@@ -143,7 +143,7 @@ export function DataTable<T extends Record<string, unknown>>({
                     >
                       {column.render
                         ? column.render(row[column.key], row)
-                        : row[column.key]}
+                        : (row[column.key] as React.ReactNode)}
                     </td>
                   ))}
                   <td className="px-4 py-3 whitespace-nowrap text-right text-sm">

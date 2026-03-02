@@ -1,4 +1,4 @@
-import { db } from '@/shared/db'
+import { dbCompat as db } from '@/shared/db'
 import { orgMembers, organizations } from '@/shared/db/schema'
 import { eq } from 'drizzle-orm'
 

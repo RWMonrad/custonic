@@ -166,7 +166,7 @@ export function FindingsFilters({
             ))}
             {filters.search && (
               <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded">
-                "{filters.search}"
+                &ldquo;{filters.search}&rdquo;
                 <button
                   onClick={() => handleSearchChange("")}
                   className="ml-1 text-gray-400 hover:text-gray-600"

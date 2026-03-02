@@ -1,8 +1,8 @@
-import { AIProvider } from "../adapter";
+import { AIProvider, CandidateFindings } from "../adapter";
 import {
-    CHUNK_ANALYSIS_PROMPT,
-    PROMPT_VERSION,
-    SYNTHESIS_PROMPT,
+  CHUNK_ANALYSIS_PROMPT,
+  PROMPT_VERSION,
+  SYNTHESIS_PROMPT,
 } from "../prompts";
 import { AnalysisOutput, ChunkOutput } from "../schemas";
 
@@ -40,7 +40,7 @@ export class AnthropicProvider implements AIProvider {
   }
 
   async synthesizeFindings(
-    candidateFindings: ChunkOutput[],
+    candidateFindings: CandidateFindings,
     fullText: string,
   ): Promise<AnalysisOutput> {
     const prompt = SYNTHESIS_PROMPT.replace(

@@ -1,15 +1,27 @@
+import { DATABASE_URL, requireEnv } from "@/shared/lib/env";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import "server-only";
 import * as schema from "./schema";
 
-const connectionString = process.env.DATABASE_URL;
+let _db: ReturnType<typeof drizzle> | null = null;
 
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not set");
+function _createDb() {
+  const url = DATABASE_URL ?? requireEnv("DATABASE_URL"); // runtime check
+  const client = postgres(url, { prepare: false });
+  return drizzle(client, { schema });
 }
 
-const client = postgres(connectionString);
-export const db = drizzle(client, { schema });
+// Lazy proxy that only initializes DB when accessed - this is the main export
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const db = new Proxy({} as any, {
+  get(target, prop) {
+    if (!_db) _db = _createDb();
+    return _db[prop as keyof typeof _db];
+  },
+});
+
+// Backward compatibility alias
+export const dbCompat = db;
 
 export * from "./schema";

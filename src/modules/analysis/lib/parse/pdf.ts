@@ -1,6 +1,6 @@
 import { Buffer } from "buffer";
-// @ts-ignore - pdf-parse doesn't have proper TypeScript definitions
-const pdf = require("pdf-parse");
+// @ts-expect-error - pdf-parse doesn't have proper TypeScript definitions
+import pdf from "pdf-parse";
 
 export interface ParseResult {
   text: string;

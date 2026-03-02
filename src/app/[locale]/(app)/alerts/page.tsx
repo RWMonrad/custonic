@@ -1,22 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import { AppLayout } from "@/shared/ui/AppLayout";
-import { DataTable } from "@/shared/ui/DataTable";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
-import { RiskBadge } from "@/shared/ui/RiskBadge";
 import { Button } from "@/shared/ui/Button";
-import { AlertTriangle, Clock, FileText, ExternalLink } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
+import { DataTable } from "@/shared/ui/DataTable";
+import { RiskBadge } from "@/shared/ui/RiskBadge";
+import { AlertTriangle, Clock, ExternalLink, FileText } from "lucide-react";
+import { useState } from "react";
 
-interface Alert {
+interface Alert extends Record<string, unknown> {
   id: string;
   contractId: string;
   contractName: string;
   type: string;
-  severity: 'critical' | 'high' | 'medium' | 'low';
+  severity: "critical" | "high" | "medium" | "low";
   description: string;
   createdAt: string;
-  status: 'new' | 'reviewing' | 'resolved';
+  status: "new" | "reviewing" | "resolved";
 }
 
 export default function AlertsPage() {
@@ -50,7 +50,8 @@ export default function AlertsPage() {
       contractName: "SaaS Contract - CloudSoft",
       type: "Auto-Renewal",
       severity: "medium",
-      description: "Auto-renewal clause without proper notification requirements",
+      description:
+        "Auto-renewal clause without proper notification requirements",
       createdAt: "1 day ago",
       status: "new",
     },
@@ -78,52 +79,66 @@ export default function AlertsPage() {
 
   const columns = [
     {
-      key: 'contractName' as keyof Alert,
-      title: 'Contract',
+      key: "contractName" as keyof Alert,
+      title: "Contract",
       sortable: true,
-      render: (value: string, row: Alert) => (
-        <div className="flex items-center space-x-2">
-          <FileText className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{value}</span>
-        </div>
-      ),
+      render: (value: unknown) => {
+        const contractName = value as string;
+        return (
+          <div className="flex items-center space-x-2">
+            <FileText className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">{contractName}</span>
+          </div>
+        );
+      },
     },
     {
-      key: 'type' as keyof Alert,
-      title: 'Alert Type',
+      key: "type" as keyof Alert,
+      title: "Alert Type",
       sortable: true,
     },
     {
-      key: 'severity' as keyof Alert,
-      title: 'Severity',
+      key: "severity" as keyof Alert,
+      title: "Severity",
       sortable: true,
-      render: (value: string) => <RiskBadge level={value as any} />,
+      render: (value: unknown) => {
+        const riskLevel = value as "critical" | "high" | "medium" | "low";
+        return <RiskBadge level={riskLevel} />;
+      },
     },
     {
-      key: 'status' as keyof Alert,
-      title: 'Status',
+      key: "status" as keyof Alert,
+      title: "Status",
       sortable: true,
-      render: (value: string) => (
-        <span className={`
-          inline-block px-2 py-1 text-xs rounded-full
-          ${value === 'new' ? 'bg-danger/10 text-danger' : ''}
-          ${value === 'reviewing' ? 'bg-warning/10 text-warning' : ''}
-          ${value === 'resolved' ? 'bg-success/10 text-success' : ''}
-        `}>
-          {value}
-        </span>
-      ),
+      render: (value: unknown) => {
+        const status = value as string;
+        return (
+          <span
+            className={`
+            inline-block px-2 py-1 text-xs rounded-full
+            ${status === "new" ? "bg-danger/10 text-danger" : ""}
+            ${status === "reviewing" ? "bg-warning/10 text-warning" : ""}
+            ${status === "resolved" ? "bg-success/10 text-success" : ""}
+          `}
+          >
+            {status}
+          </span>
+        );
+      },
     },
     {
-      key: 'createdAt' as keyof Alert,
-      title: 'Created',
+      key: "createdAt" as keyof Alert,
+      title: "Created",
       sortable: true,
-      render: (value: string) => (
-        <div className="flex items-center space-x-1">
-          <Clock className="h-3 w-3 text-muted-foreground" />
-          <span>{value}</span>
-        </div>
-      ),
+      render: (value: unknown) => {
+        const createdAt = value as string;
+        return (
+          <div className="flex items-center space-x-1">
+            <Clock className="h-3 w-3 text-muted-foreground" />
+            <span>{createdAt}</span>
+          </div>
+        );
+      },
     },
   ];
 
@@ -162,26 +177,34 @@ export default function AlertsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h4 className="font-medium text-foreground mb-1">Contract</h4>
+                    <h4 className="font-medium text-foreground mb-1">
+                      Contract
+                    </h4>
                     <p className="text-sm text-muted-foreground">
                       {selectedAlert.contractName}
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="font-medium text-foreground mb-1">Alert Type</h4>
+                    <h4 className="font-medium text-foreground mb-1">
+                      Alert Type
+                    </h4>
                     <p className="text-sm text-muted-foreground">
                       {selectedAlert.type}
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="font-medium text-foreground mb-1">Severity</h4>
+                    <h4 className="font-medium text-foreground mb-1">
+                      Severity
+                    </h4>
                     <RiskBadge level={selectedAlert.severity} />
                   </div>
 
                   <div>
-                    <h4 className="font-medium text-foreground mb-1">Description</h4>
+                    <h4 className="font-medium text-foreground mb-1">
+                      Description
+                    </h4>
                     <p className="text-sm text-muted-foreground">
                       {selectedAlert.description}
                     </p>
@@ -189,20 +212,20 @@ export default function AlertsPage() {
 
                   <div>
                     <h4 className="font-medium text-foreground mb-1">Status</h4>
-                    <span className={`
+                    <span
+                      className={`
                       inline-block px-2 py-1 text-xs rounded-full
-                      ${selectedAlert.status === 'new' ? 'bg-danger/10 text-danger' : ''}
-                      ${selectedAlert.status === 'reviewing' ? 'bg-warning/10 text-warning' : ''}
-                      ${selectedAlert.status === 'resolved' ? 'bg-success/10 text-success' : ''}
-                    `}>
+                      ${selectedAlert.status === "new" ? "bg-danger/10 text-danger" : ""}
+                      ${selectedAlert.status === "reviewing" ? "bg-warning/10 text-warning" : ""}
+                      ${selectedAlert.status === "resolved" ? "bg-success/10 text-success" : ""}
+                    `}
+                    >
                       {selectedAlert.status}
                     </span>
                   </div>
 
                   <div className="pt-4 space-y-2">
-                    <Button className="w-full">
-                      View Contract
-                    </Button>
+                    <Button className="w-full">View Contract</Button>
                     <Button variant="outline" className="w-full">
                       Mark as Resolved
                     </Button>

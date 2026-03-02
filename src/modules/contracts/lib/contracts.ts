@@ -1,5 +1,5 @@
 import { getCurrentOrgIdOrThrow } from "@/modules/auth/lib/current-org";
-import { db } from "@/shared/db";
+import { dbCompat as db } from "@/shared/db";
 import { contracts } from "@/shared/db/schema";
 import { createClient } from "@supabase/supabase-js";
 import { and, eq, isNull } from "drizzle-orm";
@@ -70,13 +70,22 @@ export async function listContractsForOrg(
     )
     .orderBy(contracts.created_at);
 
-  return result.map((contract) => ({
-    ...contract,
-    status: contract.status || "draft",
-    file_url: contract.file_url || null,
-    created_at: contract.created_at || new Date(),
-    updated_at: contract.updated_at || new Date(),
-  }));
+  return result.map((contract: unknown) => {
+    const c = contract as {
+      status?: string;
+      file_url?: string;
+      created_at?: Date;
+      updated_at?: Date;
+      [key: string]: unknown;
+    };
+    return {
+      ...c,
+      status: c.status || "draft",
+      file_url: c.file_url || null,
+      created_at: c.created_at || new Date(),
+      updated_at: c.updated_at || new Date(),
+    };
+  });
 }
 
 export async function getContractById(

@@ -1,22 +1,27 @@
 "use client";
 
-import { useState } from "react";
 import { AppLayout } from "@/shared/ui/AppLayout";
-import { DataTable } from "@/shared/ui/DataTable";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
-import { KpiCard } from "@/shared/ui/KpiCard";
 import { Button } from "@/shared/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
+import { DataTable } from "@/shared/ui/DataTable";
+import { KpiCard } from "@/shared/ui/KpiCard";
 import { RiskBadge } from "@/shared/ui/RiskBadge";
-import { Building, DollarSign, TrendingUp, AlertTriangle, Plus, MoreHorizontal } from "lucide-react";
+import {
+  AlertTriangle,
+  Building,
+  DollarSign,
+  Plus,
+  TrendingUp,
+} from "lucide-react";
 
-interface Vendor {
+interface Vendor extends Record<string, unknown> {
   id: string;
   name: string;
   category: string;
   contractCount: number;
   totalValue: string;
-  riskLevel: 'critical' | 'high' | 'medium' | 'low';
-  status: 'active' | 'inactive' | 'under_review';
+  riskLevel: "critical" | "high" | "medium" | "low";
+  status: "active" | "inactive" | "under_review";
   lastReview: string;
 }
 
@@ -103,56 +108,74 @@ export default function VendorsPage() {
 
   const columns = [
     {
-      key: 'name' as keyof Vendor,
-      title: 'Vendor',
+      key: "name" as keyof Vendor,
+      title: "Vendor",
       sortable: true,
-      render: (value: string, row: Vendor) => (
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-            {value.charAt(0)}
+      render: (value: unknown, row: Vendor) => {
+        const name = value as string;
+        return (
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
+              {name.charAt(0)}
+            </div>
+            <div>
+              <div className="font-medium text-foreground">{name}</div>
+              <div className="text-xs text-muted-foreground">
+                {row.category}
+              </div>
+            </div>
           </div>
+        );
+      },
+    },
+    {
+      key: "contractCount" as keyof Vendor,
+      title: "Contracts",
+      sortable: true,
+      render: (value: unknown, row: Vendor) => {
+        const count = value as number;
+        return (
           <div>
-            <div className="font-medium text-foreground">{value}</div>
-            <div className="text-xs text-muted-foreground">{row.category}</div>
+            <div className="font-medium text-foreground">{count}</div>
+            <div className="text-xs text-muted-foreground">
+              {row.totalValue}
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
-      key: 'contractCount' as keyof Vendor,
-      title: 'Contracts',
+      key: "riskLevel" as keyof Vendor,
+      title: "Risk Level",
       sortable: true,
-      render: (value: number, row: Vendor) => (
-        <div>
-          <div className="font-medium text-foreground">{value}</div>
-          <div className="text-xs text-muted-foreground">{row.totalValue}</div>
-        </div>
-      ),
+      render: (value: unknown) => {
+        const riskLevel = value as "critical" | "high" | "medium" | "low";
+        return <RiskBadge level={riskLevel} />;
+      },
     },
     {
-      key: 'riskLevel' as keyof Vendor,
-      title: 'Risk Level',
+      key: "status" as keyof Vendor,
+      title: "Status",
       sortable: true,
-      render: (value: string) => <RiskBadge level={value as any} />,
+      render: (value: unknown) => {
+        const status = value as string;
+        return (
+          <span
+            className={`
+            inline-block px-2 py-1 text-xs rounded-full
+            ${status === "active" ? "bg-success/10 text-success" : ""}
+            ${status === "under_review" ? "bg-warning/10 text-warning" : ""}
+            ${status === "inactive" ? "bg-muted text-muted-foreground" : ""}
+          `}
+          >
+            {status.replace("_", " ")}
+          </span>
+        );
+      },
     },
     {
-      key: 'status' as keyof Vendor,
-      title: 'Status',
-      sortable: true,
-      render: (value: string) => (
-        <span className={`
-          inline-block px-2 py-1 text-xs rounded-full
-          ${value === 'active' ? 'bg-success/10 text-success' : ''}
-          ${value === 'under_review' ? 'bg-warning/10 text-warning' : ''}
-          ${value === 'inactive' ? 'bg-muted text-muted-foreground' : ''}
-        `}>
-          {value.replace('_', ' ')}
-        </span>
-      ),
-    },
-    {
-      key: 'lastReview' as keyof Vendor,
-      title: 'Last Review',
+      key: "lastReview" as keyof Vendor,
+      title: "Last Review",
       sortable: true,
     },
   ];
@@ -163,7 +186,9 @@ export default function VendorsPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Vendors & Portfolio</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              Vendors & Portfolio
+            </h1>
             <p className="text-muted-foreground">
               Manage vendor relationships and portfolio analytics
             </p>
@@ -196,17 +221,30 @@ export default function VendorsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {['Software', 'Logistics', 'Cloud Services', 'Legal', 'Manufacturing'].map((category, index) => {
-                  const categoryVendors = vendors.filter(v => v.category === category);
+                {[
+                  "Software",
+                  "Logistics",
+                  "Cloud Services",
+                  "Legal",
+                  "Manufacturing",
+                ].map((category) => {
+                  const categoryVendors = vendors.filter(
+                    (v) => v.category === category,
+                  );
                   const totalValue = categoryVendors.reduce((sum, v) => {
-                    const value = parseFloat(v.totalValue.replace(/[$,]/g, ''));
+                    const value = parseFloat(v.totalValue.replace(/[$,]/g, ""));
                     return sum + value;
                   }, 0);
-                  
+
                   return (
-                    <div key={category} className="flex items-center justify-between">
+                    <div
+                      key={category}
+                      className="flex items-center justify-between"
+                    >
                       <div>
-                        <div className="font-medium text-foreground">{category}</div>
+                        <div className="font-medium text-foreground">
+                          {category}
+                        </div>
                         <div className="text-sm text-muted-foreground">
                           {categoryVendors.length} vendors
                         </div>
@@ -216,7 +254,11 @@ export default function VendorsPage() {
                           ${totalValue.toLocaleString()}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {categoryVendors.reduce((sum, v) => sum + v.contractCount, 0)} contracts
+                          {categoryVendors.reduce(
+                            (sum, v) => sum + v.contractCount,
+                            0,
+                          )}{" "}
+                          contracts
                         </div>
                       </div>
                     </div>
@@ -233,15 +275,40 @@ export default function VendorsPage() {
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { level: 'critical', count: vendors.filter(v => v.riskLevel === 'critical').length, color: 'text-danger' },
-                  { level: 'high', count: vendors.filter(v => v.riskLevel === 'high').length, color: 'text-warning' },
-                  { level: 'medium', count: vendors.filter(v => v.riskLevel === 'medium').length, color: 'text-primary' },
-                  { level: 'low', count: vendors.filter(v => v.riskLevel === 'low').length, color: 'text-success' },
+                  {
+                    level: "critical",
+                    count: vendors.filter((v) => v.riskLevel === "critical")
+                      .length,
+                    color: "text-danger",
+                  },
+                  {
+                    level: "high",
+                    count: vendors.filter((v) => v.riskLevel === "high").length,
+                    color: "text-warning",
+                  },
+                  {
+                    level: "medium",
+                    count: vendors.filter((v) => v.riskLevel === "medium")
+                      .length,
+                    color: "text-primary",
+                  },
+                  {
+                    level: "low",
+                    count: vendors.filter((v) => v.riskLevel === "low").length,
+                    color: "text-success",
+                  },
                 ].map(({ level, count, color }) => (
-                  <div key={level} className="flex items-center justify-between">
+                  <div
+                    key={level}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex items-center space-x-2">
-                      <RiskBadge level={level as any} />
-                      <span className="text-sm text-foreground capitalize">{level}</span>
+                      <RiskBadge
+                        level={level as "critical" | "high" | "medium" | "low"}
+                      />
+                      <span className="text-sm text-foreground capitalize">
+                        {level}
+                      </span>
                     </div>
                     <span className={`font-medium ${color}`}>{count}</span>
                   </div>

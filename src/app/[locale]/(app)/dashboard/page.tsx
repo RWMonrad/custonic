@@ -11,7 +11,19 @@ import {
   Users,
 } from "lucide-react";
 
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 export default function DashboardPage() {
+  // Create deterministic PRNG for heatmap
+  const prng = mulberry32(42); // Fixed seed for consistent heatmap
+
   // Mock data
   const kpiData = [
     {
@@ -231,7 +243,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-7 gap-2">
               {/* Mock heatmap data */}
               {Array.from({ length: 35 }, (_, i) => {
-                const riskLevel = Math.random();
+                const riskLevel = prng();
                 let bgColor = "bg-muted";
                 if (riskLevel > 0.8) bgColor = "bg-danger";
                 else if (riskLevel > 0.6) bgColor = "bg-warning";

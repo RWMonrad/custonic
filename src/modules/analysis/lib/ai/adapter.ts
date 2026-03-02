@@ -6,6 +6,9 @@ import {
     chunkOutputSchema,
 } from "./schemas";
 
+// Type for candidate findings passed to synthesizeFindings
+export type CandidateFindings = ChunkOutput[];
+
 export interface AIProvider {
   name: string;
   analyzeChunk(
@@ -14,7 +17,7 @@ export interface AIProvider {
     totalChunks: number,
   ): Promise<ChunkOutput>;
   synthesizeFindings(
-    candidateFindings: any[],
+    candidateFindings: CandidateFindings,
     fullText: string,
   ): Promise<AnalysisOutput>;
   estimateTokens(text: string): number;
@@ -38,12 +41,15 @@ export class AIAdapter {
   private createProvider(config: AIConfig): AIProvider {
     switch (config.provider) {
       case "mock":
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { MockProvider } = require("./providers/mock");
         return new MockProvider();
       case "openai":
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { OpenAIProvider } = require("./providers/openai");
         return new OpenAIProvider(config.model || "gpt-4");
       case "anthropic":
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { AnthropicProvider } = require("./providers/anthropic");
         return new AnthropicProvider(
           config.model || "claude-3-sonnet-20240229",
@@ -79,12 +85,17 @@ export class AIAdapter {
   }
 
   async synthesizeFindings(
-    candidateFindings: any[],
+    candidateFindings: unknown[],
     fullText: string,
   ): Promise<AnalysisOutput> {
     try {
+      // Validate input with Zod to ensure type safety
+      const validatedFindings = chunkOutputSchema
+        .array()
+        .parse(candidateFindings);
+
       const result = await this.provider.synthesizeFindings(
-        candidateFindings,
+        validatedFindings,
         fullText,
       );
 

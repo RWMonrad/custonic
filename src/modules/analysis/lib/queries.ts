@@ -1,4 +1,4 @@
-import { db } from "@/shared/db";
+import { dbCompat as db } from "@/shared/db";
 import { analyses, riskFindings } from "@/shared/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 
@@ -39,8 +39,8 @@ export async function getLatestAnalysisForContract(
   contractId: string,
   orgId: string,
 ): Promise<AnalysisWithFindings | null> {
-  // Get latest analysis for this contract
-  const latestAnalysis = await db
+  const dbInstance = db();
+  const latestAnalysis = await dbInstance
     .select({
       id: analyses.id,
       orgId: analyses.org_id,
@@ -102,13 +102,22 @@ export async function getLatestAnalysisForContract(
     createdAt: analysis.createdAt || new Date(),
     updatedAt: analysis.updatedAt || new Date(),
     results: analysis.results || undefined,
-    findings: findings.map((f) => ({
-      ...f,
-      citations: f.citations ? JSON.parse(f.citations) : [],
-      confidenceScore: f.confidenceScore || 0,
-      recommendation: f.recommendation || "",
-      createdAt: f.createdAt || new Date(),
-    })),
+    findings: findings.map((f: unknown) => {
+      const finding = f as {
+        citations?: string;
+        confidenceScore?: number;
+        recommendation?: string;
+        createdAt?: Date;
+        [key: string]: unknown;
+      };
+      return {
+        ...finding,
+        citations: finding.citations ? JSON.parse(finding.citations) : [],
+        confidenceScore: finding.confidenceScore || 0,
+        recommendation: finding.recommendation || "",
+        createdAt: finding.createdAt || new Date(),
+      };
+    }),
   };
 }
 

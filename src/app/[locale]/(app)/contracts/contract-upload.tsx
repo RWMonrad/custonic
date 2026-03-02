@@ -3,7 +3,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { useFormStatus } from "react-dom";
 import {
     createContractDraftAction,
     finalizeContractUploadAction,
@@ -16,26 +15,6 @@ const ALLOWED_MIME_TYPES = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
-
-function SubmitButton({
-  children,
-  disabled,
-}: {
-  children: React.ReactNode;
-  disabled?: boolean;
-}) {
-  const { pending } = useFormStatus();
-
-  return (
-    <button
-      type="submit"
-      disabled={pending || disabled}
-      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      {children}
-    </button>
-  );
-}
 
 export function ContractUpload() {
   const [uploadProgress, setUploadProgress] = useState(0);

@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { AppLayout } from "@/shared/ui/AppLayout";
-import { PermissionMatrix } from "@/shared/ui/PermissionMatrix";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
 import { Button } from "@/shared/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
+import { PermissionMatrix } from "@/shared/ui/PermissionMatrix";
 import { SettingsRow } from "@/shared/ui/SettingsRow";
-import { Shield, Plus, Edit, Trash2 } from "lucide-react";
+import { Edit, Plus, Shield, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 interface Permission {
   id: string;
@@ -18,7 +18,7 @@ interface Role {
   id: string;
   name: string;
   description: string;
-  permissions: Record<string, 'allow' | 'deny' | 'inherit'>;
+  permissions: Record<string, "allow" | "deny" | "inherit">;
 }
 
 export default function RolesPage() {
@@ -30,99 +30,140 @@ export default function RolesPage() {
 
   const [roles, setRoles] = useState<Role[]>([
     {
-      id: 'admin',
-      name: 'Admin',
-      description: 'Full system access',
+      id: "admin",
+      name: "Admin",
+      description: "Full system access",
       permissions: {
-        'view_contracts': 'allow',
-        'edit_contracts': 'allow',
-        'delete_contracts': 'allow',
-        'manage_users': 'allow',
-        'manage_roles': 'allow',
-        'view_analytics': 'allow',
-        'manage_settings': 'allow',
-        'export_data': 'allow',
-      }
+        view_contracts: "allow",
+        edit_contracts: "allow",
+        delete_contracts: "allow",
+        manage_users: "allow",
+        manage_roles: "allow",
+        view_analytics: "allow",
+        manage_settings: "allow",
+        export_data: "allow",
+      },
     },
     {
-      id: 'manager',
-      name: 'Manager',
-      description: 'Department management',
+      id: "manager",
+      name: "Manager",
+      description: "Department management",
       permissions: {
-        'view_contracts': 'allow',
-        'edit_contracts': 'allow',
-        'delete_contracts': 'deny',
-        'manage_users': 'allow',
-        'manage_roles': 'deny',
-        'view_analytics': 'allow',
-        'manage_settings': 'deny',
-        'export_data': 'allow',
-      }
+        view_contracts: "allow",
+        edit_contracts: "allow",
+        delete_contracts: "deny",
+        manage_users: "allow",
+        manage_roles: "deny",
+        view_analytics: "allow",
+        manage_settings: "deny",
+        export_data: "allow",
+      },
     },
     {
-      id: 'member',
-      name: 'Member',
-      description: 'Standard user access',
+      id: "member",
+      name: "Member",
+      description: "Standard user access",
       permissions: {
-        'view_contracts': 'allow',
-        'edit_contracts': 'allow',
-        'delete_contracts': 'deny',
-        'manage_users': 'deny',
-        'manage_roles': 'deny',
-        'view_analytics': 'allow',
-        'manage_settings': 'deny',
-        'export_data': 'deny',
-      }
+        view_contracts: "allow",
+        edit_contracts: "allow",
+        delete_contracts: "deny",
+        manage_users: "deny",
+        manage_roles: "deny",
+        view_analytics: "allow",
+        manage_settings: "deny",
+        export_data: "deny",
+      },
     },
     {
-      id: 'viewer',
-      name: 'Viewer',
-      description: 'Read-only access',
+      id: "viewer",
+      name: "Viewer",
+      description: "Read-only access",
       permissions: {
-        'view_contracts': 'allow',
-        'edit_contracts': 'deny',
-        'delete_contracts': 'deny',
-        'manage_users': 'deny',
-        'manage_roles': 'deny',
-        'view_analytics': 'allow',
-        'manage_settings': 'deny',
-        'export_data': 'deny',
-      }
+        view_contracts: "allow",
+        edit_contracts: "deny",
+        delete_contracts: "deny",
+        manage_users: "deny",
+        manage_roles: "deny",
+        view_analytics: "allow",
+        manage_settings: "deny",
+        export_data: "deny",
+      },
     },
   ]);
 
   const permissions: Permission[] = [
-    { id: 'view_contracts', name: 'View Contracts', description: 'View contract details and analysis' },
-    { id: 'edit_contracts', name: 'Edit Contracts', description: 'Modify contract information' },
-    { id: 'delete_contracts', name: 'Delete Contracts', description: 'Remove contracts from system' },
-    { id: 'manage_users', name: 'Manage Users', description: 'Invite, edit, and remove users' },
-    { id: 'manage_roles', name: 'Manage Roles', description: 'Create and modify user roles' },
-    { id: 'view_analytics', name: 'View Analytics', description: 'Access reports and analytics' },
-    { id: 'manage_settings', name: 'Manage Settings', description: 'Modify organization settings' },
-    { id: 'export_data', name: 'Export Data', description: 'Export contracts and reports' },
+    {
+      id: "view_contracts",
+      name: "View Contracts",
+      description: "View contract details and analysis",
+    },
+    {
+      id: "edit_contracts",
+      name: "Edit Contracts",
+      description: "Modify contract information",
+    },
+    {
+      id: "delete_contracts",
+      name: "Delete Contracts",
+      description: "Remove contracts from system",
+    },
+    {
+      id: "manage_users",
+      name: "Manage Users",
+      description: "Invite, edit, and remove users",
+    },
+    {
+      id: "manage_roles",
+      name: "Manage Roles",
+      description: "Create and modify user roles",
+    },
+    {
+      id: "view_analytics",
+      name: "View Analytics",
+      description: "Access reports and analytics",
+    },
+    {
+      id: "manage_settings",
+      name: "Manage Settings",
+      description: "Modify organization settings",
+    },
+    {
+      id: "export_data",
+      name: "Export Data",
+      description: "Export contracts and reports",
+    },
   ];
 
-  const handlePermissionChange = (roleId: string, permissionId: string, value: 'allow' | 'deny' | 'inherit') => {
-    setRoles(prev => prev.map(role => 
-      role.id === roleId 
-        ? { ...role, permissions: { ...role.permissions, [permissionId]: value } }
-        : role
-    ));
+  const handlePermissionChange = (
+    roleId: string,
+    permissionId: string,
+    value: "allow" | "deny" | "inherit",
+  ) => {
+    setRoles((prev) =>
+      prev.map((role) =>
+        role.id === roleId
+          ? {
+              ...role,
+              permissions: { ...role.permissions, [permissionId]: value },
+            }
+          : role,
+      ),
+    );
   };
 
   const handleAddRole = () => {
     // TODO: Open role creation modal
-    console.log('Add new role');
+    console.log("Add new role");
   };
 
   const handleEditRole = (roleId: string) => {
     // TODO: Open role edit modal
-    console.log('Edit role:', roleId);
+    console.log("Edit role:", roleId);
   };
 
   const handleDeleteRole = (roleId: string) => {
     // TODO: Confirm and delete role
-    console.log('Delete role:', roleId);
+    console.log("Delete role:", roleId);
   };
 
   return (
@@ -131,7 +172,9 @@ export default function RolesPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Roles & Permissions</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              Roles & Permissions
+            </h1>
             <p className="text-muted-foreground">
               Configure user roles and their permissions
             </p>
@@ -184,7 +227,7 @@ export default function RolesPage() {
                       >
                         <Edit className="h-3 w-3" />
                       </Button>
-                      {role.id !== 'admin' && (
+                      {role.id !== "admin" && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -210,21 +253,36 @@ export default function RolesPage() {
                   description="Higher roles inherit lower role permissions"
                   type="toggle"
                   value={settings.roleHierarchy}
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, roleHierarchy: value }))}
+                  onValueChange={(value) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      roleHierarchy: value as boolean,
+                    }))
+                  }
                 />
                 <SettingsRow
                   title="Permission Inheritance"
                   description="Roles inherit permissions from parent roles"
                   type="toggle"
                   value={settings.permissionInheritance}
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, permissionInheritance: value }))}
+                  onValueChange={(value) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      permissionInheritance: value as boolean,
+                    }))
+                  }
                 />
                 <SettingsRow
                   title="Audit Role Changes"
                   description="Log all role and permission modifications"
                   type="toggle"
                   value={settings.auditRoleChanges}
-                  onValueChange={(value) => setSettings(prev => ({ ...prev, auditRoleChanges: value }))}
+                  onValueChange={(value) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      auditRoleChanges: value as boolean,
+                    }))
+                  }
                 />
               </CardContent>
             </Card>

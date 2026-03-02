@@ -132,7 +132,7 @@ export function FindingCard({
                   </div>
 
                   <blockquote className="text-sm text-gray-700 italic border-l-2 border-gray-300 pl-3 py-1">
-                    "{citation.excerpt}"
+                    &ldquo;{citation.excerpt}&rdquo;
                   </blockquote>
 
                   <div className="mt-2 text-xs text-gray-500">

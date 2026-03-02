@@ -1,18 +1,20 @@
 "use server";
 
+import { checkBackpressure } from "@/modules/analysis/lib/backpressure";
+import { checkKillSwitch } from "@/modules/analysis/lib/kill-switch";
+import { AnalysisLogger } from "@/modules/analysis/lib/safe-logging";
 import { getCurrentOrgIdOrThrow } from "@/modules/auth/lib/current-org";
+import { billingHooks } from "@/modules/billing/lib/billing-hooks-clean";
 import { getContractById } from "@/modules/contracts/lib/contracts";
+import { BILLING_EVENTS } from "@/shared/billing/constants";
 import { db } from "@/shared/db";
-import { contracts } from "@/shared/db/schema";
 import { analyses, analysisTypeEnum } from "@/shared/db/schema/analyses";
 import { createClient } from "@supabase/supabase-js";
-import { and, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
-const ANALYSIS_DISABLED = process.env.ANALYSIS_DISABLED === "true";
-const MAX_ANALYSES_PER_ORG_PER_DAY = parseInt(
-  process.env.MAX_ANALYSES_PER_ORG_PER_DAY || "10",
+const ORG_DAILY_ANALYSIS_LIMIT = parseInt(
+  process.env.ORG_DAILY_ANALYSIS_LIMIT || "20",
 );
 
 const enqueueAnalysisSchema = z.object({
@@ -34,38 +36,28 @@ export const initialEnqueueAnalysisState: EnqueueAnalysisState = {
 async function checkRateLimit(
   orgId: string,
 ): Promise<{ allowed: boolean; reason?: string }> {
-  if (ANALYSIS_DISABLED) {
-    return { allowed: false, reason: "Analysis is currently disabled" };
-  }
-
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  // Count analyses in last 24 hours for this org
-  const twentyFourHoursAgo = new Date(
-    Date.now() - 24 * 60 * 60 * 1000,
-  ).toISOString();
-
-  const { data: recentAnalyses, error } = await supabase
-    .from("analyses")
-    .select("id")
-    .eq("org_id", orgId)
-    .gte("created_at", twentyFourHoursAgo);
+  // Use the new RPC function for atomic rate limiting
+  const { data, error } = await supabase.rpc(
+    "check_and_increment_daily_usage",
+    {
+      p_org_id: orgId,
+      p_daily_limit: ORG_DAILY_ANALYSIS_LIMIT,
+    },
+  );
 
   if (error) {
     console.error("Rate limit check failed:", error);
     return { allowed: false, reason: "Unable to verify rate limit" };
   }
 
-  const count = recentAnalyses?.length || 0;
-
-  if (count >= MAX_ANALYSES_PER_ORG_PER_DAY) {
-    return {
-      allowed: false,
-      reason: `Daily limit of ${MAX_ANALYSES_PER_ORG_PER_DAY} analyses reached. Try again tomorrow.`,
-    };
+  const result = data?.[0];
+  if (!result?.allowed) {
+    return { allowed: false, reason: result?.message || "Rate limit exceeded" };
   }
 
   return { allowed: true };
@@ -75,6 +67,8 @@ export async function enqueueAnalysisAction(
   prevState: EnqueueAnalysisState,
   formData: FormData,
 ): Promise<EnqueueAnalysisState> {
+  const startTime = Date.now();
+
   try {
     // Parse and validate form data
     const validatedFields = enqueueAnalysisSchema.safeParse({
@@ -91,25 +85,8 @@ export async function enqueueAnalysisAction(
 
     const { contractId, analysisType } = validatedFields.data;
 
-    // Get current organization
+    // Get current org and contract
     const orgId = await getCurrentOrgIdOrThrow();
-
-    // Check rate limits
-    const rateLimitCheck = await checkRateLimit(orgId);
-    if (!rateLimitCheck.allowed) {
-      return {
-        status: "error",
-        message: rateLimitCheck.reason || "Analysis temporarily unavailable",
-      };
-    }
-
-    // Create Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
-
-    // Check if contract exists and belongs to org
     const contract = await getContractById(contractId);
 
     if (!contract) {
@@ -119,58 +96,120 @@ export async function enqueueAnalysisAction(
       };
     }
 
-    // Check if there's already a pending/processing analysis
-    const existingAnalysis = await db
-      .select({ id: analyses.id })
-      .from(analyses)
-      .where(
-        and(
-          eq(analyses.contract_id, validatedFields.data.contractId),
-          eq(analyses.org_id, orgId),
-          eq(analyses.type, validatedFields.data.analysisType),
-          // Only check for active analyses
-          eq(analyses.status, "queued"), // or processing
-        ),
-      )
-      .limit(1);
+    // A) Kill Switch Check
+    const killSwitch = checkKillSwitch();
+    if (!killSwitch.enabled) {
+      AnalysisLogger.log({
+        analysisId: "blocked",
+        orgId,
+        provider: "none",
+        duration: Date.now() - startTime,
+        chunkCount: 0,
+        truncated: false,
+        status: "blocked",
+        errorMessage: killSwitch.message || undefined,
+      });
 
-    if (existingAnalysis.length > 0) {
       return {
         status: "error",
-        message: "Analysis is already in progress",
+        message: killSwitch.message || undefined,
       };
     }
 
-    // Create new analysis record
+    // B) Rate Limiting Check
+    const rateLimit = await checkRateLimit(orgId);
+    if (!rateLimit.allowed) {
+      AnalysisLogger.log({
+        analysisId: "blocked",
+        orgId,
+        provider: "none",
+        duration: Date.now() - startTime,
+        chunkCount: 0,
+        truncated: false,
+        status: "blocked",
+        errorMessage: rateLimit.reason || undefined,
+      });
+
+      return {
+        status: "error",
+        message: rateLimit.reason,
+      };
+    }
+
+    // D) Billing Plan Limits Check
+    const billingCheck = await billingHooks.canEnqueueAnalysis(orgId);
+    if (!billingCheck.allowed) {
+      AnalysisLogger.log({
+        analysisId: "blocked",
+        orgId,
+        provider: "none",
+        duration: Date.now() - startTime,
+        chunkCount: 0,
+        truncated: false,
+        status: "blocked",
+        errorMessage: billingCheck.message,
+      });
+
+      return {
+        status: "error",
+        message: billingCheck.message,
+      };
+    }
+
+    // C) Backpressure Check
+    const backpressure = await checkBackpressure(orgId);
+    if (!backpressure.allowed) {
+      AnalysisLogger.log({
+        analysisId: "blocked",
+        orgId,
+        provider: "none",
+        duration: Date.now() - startTime,
+        chunkCount: 0,
+        truncated: false,
+        status: "blocked",
+        errorMessage: backpressure.message || undefined,
+      });
+
+      return {
+        status: "error",
+        message: backpressure.message,
+      };
+    }
+
+    // Create analysis record
     const analysisId = nanoid();
     await db.insert(analyses).values({
       id: analysisId,
       org_id: orgId,
-      contract_id: validatedFields.data.contractId,
-      type: validatedFields.data.analysisType,
+      contract_id: contractId,
+      type: analysisType,
       status: "queued",
-      retry_count: 0,
+      created_at: new Date(),
+      updated_at: new Date(),
     });
 
-    // Update contract status to queued
-    await db
-      .update(contracts)
-      .set({
-        status: "queued",
-        updated_at: new Date(),
-      })
-      .where(
-        and(
-          eq(contracts.id, validatedFields.data.contractId),
-          eq(contracts.org_id, orgId),
-        ),
-      );
+    // Record billing ledger entry for analysis queued (USD=1: units=0 for queue)
+    await billingHooks.recordUsage(
+      orgId,
+      BILLING_EVENTS.ANALYSIS_QUEUED,
+      "analysis",
+      analysisId,
+      {
+        analysis_type: analysisType,
+        contract_id: contractId,
+      },
+      undefined, // System action, no actor
+    );
 
-    // TODO: Add audit log entry
-    // await insertAuditLog('ANALYSIS_QUEUED', analysisId, orgId, {
-    //   contractId: validatedFields.data.contractId,
-    //   analysisType: validatedFields.data.analysisType
-    // })
+    AnalysisLogger.log({
+      analysisId,
+      orgId,
+      provider: "queued",
+      duration: Date.now() - startTime,
+      chunkCount: 0,
+      truncated: false,
+      status: "queued",
+    });
 
     return {
       status: "success",
@@ -178,10 +217,23 @@ export async function enqueueAnalysisAction(
       analysisId,
     };
   } catch (error) {
+    const duration = Date.now() - startTime;
+
+    AnalysisLogger.log({
+      analysisId: "error",
+      orgId: "unknown",
+      provider: "none",
+      duration,
+      chunkCount: 0,
+      truncated: false,
+      status: "error",
+      errorMessage: error instanceof Error ? error.message : "Unknown error",
+    });
+
     console.error("Failed to enqueue analysis:", error);
     return {
       status: "error",
-      message: "Failed to queue analysis",
+      message: "Failed to enqueue analysis",
     };
   }
 }

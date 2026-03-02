@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { AppLayout } from "@/shared/ui/AppLayout";
-import { SettingsRow } from "@/shared/ui/SettingsRow";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
 import { Button } from "@/shared/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/Card";
+import { SettingsRow } from "@/shared/ui/SettingsRow";
 import { Bell, Mail, Smartphone, Webhook } from "lucide-react";
+import { useState } from "react";
 
 export default function NotificationSettingsPage() {
   const [settings, setSettings] = useState({
@@ -14,21 +14,21 @@ export default function NotificationSettingsPage() {
     emailWeekly: false,
     emailCritical: true,
     emailDigest: true,
-    
+
     // Push Notifications
     pushAlerts: true,
     pushCritical: true,
     pushUpdates: false,
-    
+
     // In-App Notifications
     inAppAlerts: true,
     inAppContracts: true,
     inAppDeadlines: true,
-    
+
     // Webhook Settings
     webhookEnabled: false,
     webhookUrl: "",
-    
+
     // Frequency Settings
     immediateAlerts: true,
     hourlyDigest: false,
@@ -36,12 +36,12 @@ export default function NotificationSettingsPage() {
     weeklyDigest: false,
   });
 
-  const handleSettingChange = (key: string, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+  const handleSettingChange = (key: string, value: unknown) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSave = () => {
-    console.log('Saving settings:', settings);
+    console.log("Saving settings:", settings);
     // TODO: Save to backend
   };
 
@@ -50,7 +50,9 @@ export default function NotificationSettingsPage() {
       <div className="p-6 space-y-6">
         {/* Page Header */}
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Notification Settings</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Notification Settings
+          </h1>
           <p className="text-muted-foreground">
             Configure how and when you receive notifications
           </p>
@@ -70,28 +72,36 @@ export default function NotificationSettingsPage() {
               description="Receive immediate email for critical risk alerts"
               type="toggle"
               value={settings.emailCritical}
-              onValueChange={(value) => handleSettingChange('emailCritical', value)}
+              onValueChange={(value) =>
+                handleSettingChange("emailCritical", value)
+              }
             />
             <SettingsRow
               title="Daily Digest"
               description="Daily summary of all contract activities"
               type="toggle"
               value={settings.emailDigest}
-              onValueChange={(value) => handleSettingChange('emailDigest', value)}
+              onValueChange={(value) =>
+                handleSettingChange("emailDigest", value)
+              }
             />
             <SettingsRow
               title="Weekly Report"
               description="Weekly analytics and risk overview"
               type="toggle"
               value={settings.emailWeekly}
-              onValueChange={(value) => handleSettingChange('emailWeekly', value)}
+              onValueChange={(value) =>
+                handleSettingChange("emailWeekly", value)
+              }
             />
             <SettingsRow
               title="All Alerts"
               description="Email notification for all alert types"
               type="toggle"
               value={settings.emailAlerts}
-              onValueChange={(value) => handleSettingChange('emailAlerts', value)}
+              onValueChange={(value) =>
+                handleSettingChange("emailAlerts", value)
+              }
             />
           </CardContent>
         </Card>
@@ -110,21 +120,27 @@ export default function NotificationSettingsPage() {
               description="Push notifications for critical alerts"
               type="toggle"
               value={settings.pushCritical}
-              onValueChange={(value) => handleSettingChange('pushCritical', value)}
+              onValueChange={(value) =>
+                handleSettingChange("pushCritical", value)
+              }
             />
             <SettingsRow
               title="All Alerts"
               description="Push notifications for all alert types"
               type="toggle"
               value={settings.pushAlerts}
-              onValueChange={(value) => handleSettingChange('pushAlerts', value)}
+              onValueChange={(value) =>
+                handleSettingChange("pushAlerts", value)
+              }
             />
             <SettingsRow
               title="System Updates"
               description="Notifications about system updates and maintenance"
               type="toggle"
               value={settings.pushUpdates}
-              onValueChange={(value) => handleSettingChange('pushUpdates', value)}
+              onValueChange={(value) =>
+                handleSettingChange("pushUpdates", value)
+              }
             />
           </CardContent>
         </Card>
@@ -143,21 +159,27 @@ export default function NotificationSettingsPage() {
               description="Show risk alerts in notification center"
               type="toggle"
               value={settings.inAppAlerts}
-              onValueChange={(value) => handleSettingChange('inAppAlerts', value)}
+              onValueChange={(value) =>
+                handleSettingChange("inAppAlerts", value)
+              }
             />
             <SettingsRow
               title="Contract Updates"
               description="Notifications for contract status changes"
               type="toggle"
               value={settings.inAppContracts}
-              onValueChange={(value) => handleSettingChange('inAppContracts', value)}
+              onValueChange={(value) =>
+                handleSettingChange("inAppContracts", value)
+              }
             />
             <SettingsRow
               title="Deadline Reminders"
               description="Reminders for upcoming contract deadlines"
               type="toggle"
               value={settings.inAppDeadlines}
-              onValueChange={(value) => handleSettingChange('inAppDeadlines', value)}
+              onValueChange={(value) =>
+                handleSettingChange("inAppDeadlines", value)
+              }
             />
           </CardContent>
         </Card>
@@ -176,14 +198,18 @@ export default function NotificationSettingsPage() {
               description="Send notifications to external systems"
               type="toggle"
               value={settings.webhookEnabled}
-              onValueChange={(value) => handleSettingChange('webhookEnabled', value)}
+              onValueChange={(value) =>
+                handleSettingChange("webhookEnabled", value)
+              }
             />
             <SettingsRow
               title="Webhook URL"
               description="Endpoint URL for webhook notifications"
               type="input"
               value={settings.webhookUrl}
-              onValueChange={(value) => handleSettingChange('webhookUrl', value)}
+              onValueChange={(value) =>
+                handleSettingChange("webhookUrl", value)
+              }
               placeholder="https://your-webhook-url.com"
               disabled={!settings.webhookEnabled}
             />
@@ -208,28 +234,36 @@ export default function NotificationSettingsPage() {
               description="Send notifications immediately when events occur"
               type="toggle"
               value={settings.immediateAlerts}
-              onValueChange={(value) => handleSettingChange('immediateAlerts', value)}
+              onValueChange={(value) =>
+                handleSettingChange("immediateAlerts", value)
+              }
             />
             <SettingsRow
               title="Hourly Digest"
               description="Batch notifications into hourly summaries"
               type="toggle"
               value={settings.hourlyDigest}
-              onValueChange={(value) => handleSettingChange('hourlyDigest', value)}
+              onValueChange={(value) =>
+                handleSettingChange("hourlyDigest", value)
+              }
             />
             <SettingsRow
               title="Daily Digest"
               description="Batch notifications into daily summaries"
               type="toggle"
               value={settings.dailyDigest}
-              onValueChange={(value) => handleSettingChange('dailyDigest', value)}
+              onValueChange={(value) =>
+                handleSettingChange("dailyDigest", value)
+              }
             />
             <SettingsRow
               title="Weekly Digest"
               description="Batch notifications into weekly summaries"
               type="toggle"
               value={settings.weeklyDigest}
-              onValueChange={(value) => handleSettingChange('weeklyDigest', value)}
+              onValueChange={(value) =>
+                handleSettingChange("weeklyDigest", value)
+              }
             />
           </CardContent>
         </Card>
